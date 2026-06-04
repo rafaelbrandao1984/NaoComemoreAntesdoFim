@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "oHtR1GV+tkB95GYu4MeMUd931NOmpzm4L1Gdz4Zx8Vs=",
+  "Hash": "HBEjctnWuau3K6lqngdG2XR9UCbcHUhyRdZiTm99t+0=",
   "Source": "NaoComemoreAntesdoFim",
   "BasePath": "/",
   "Mode": "Root",
@@ -7805,6 +7805,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/home/rbrandao/NaoComemoreAntesdoFim/obj/Debug/net8.0/scopedcss/projectbundle/NaoComemoreAntesdoFim.bundle.scp.css"
+    },
+    {
+      "Identity": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/constellation-bg.svg",
+      "SourceId": "NaoComemoreAntesdoFim",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "constellation-bg.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/constellation-bg.svg"
     },
     {
       "Identity": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/css/app.css",

@@ -1,0 +1,73 @@
+{
+  "Files": [
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/bin/Release/net8.0/wwwroot/_framework/blazor.webassembly.js",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/obj/Release/net8.0/compressed/12y98gz84m.gz",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/obj/Release/net8.0/scopedcss/bundle/NaoComemoreAntesdoFim.styles.css",
+      "PackagePath": "staticwebassets/NaoComemoreAntesdoFim.styles.css"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/constellation-bg.svg",
+      "PackagePath": "staticwebassets/constellation-bg.svg"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/css/app.css",
+      "PackagePath": "staticwebassets/css/app.css"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/css/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/css/constellation.svg",
+      "PackagePath": "staticwebassets/css/constellation.svg"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/icon-192.png",
+      "PackagePath": "staticwebassets/icon-192.png"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/images/game-reference.png",
+      "PackagePath": "staticwebassets/images/game-reference.png"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/sample-data/weather.json",
+      "PackagePath": "staticwebassets/sample-data/weather.json"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.NaoComemoreAntesdoFim.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.build.NaoComemoreAntesdoFim.props",
+      "PackagePath": "build\\NaoComemoreAntesdoFim.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.buildMultiTargeting.NaoComemoreAntesdoFim.props",
+      "PackagePath": "buildMultiTargeting\\NaoComemoreAntesdoFim.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/staticwebassets/msbuild.buildTransitive.NaoComemoreAntesdoFim.props",
+      "PackagePath": "buildTransitive\\NaoComemoreAntesdoFim.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

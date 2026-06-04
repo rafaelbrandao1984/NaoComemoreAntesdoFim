@@ -8,20 +8,29 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 1.25rem;
-    border-bottom: 1px solid rgba(201, 162, 39, 0.35);
-    background: rgba(6, 20, 40, 0.9);
+    padding: 0.55rem 1.25rem;
+    border-bottom: 2px solid var(--gold);
+    background: rgba(5, 14, 42, 0.95);
     flex-shrink: 0;
+    box-shadow:
+        0 1px 0 rgba(201, 162, 39, 0.2),
+        0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 .board-layout-exit {
-    color: #e8d5a3;
-    font-size: 0.9rem;
+    color: var(--gold-light);
+    font-size: 0.85rem;
     text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+    opacity: 0.8;
+    transition: opacity 0.2s, color 0.2s;
 }
 
 .board-layout-exit:hover {
-    color: #f5e6b8;
+    color: var(--gold-bright);
+    opacity: 1;
 }
 
 .board-layout-main {

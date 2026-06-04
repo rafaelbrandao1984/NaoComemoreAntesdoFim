@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @inject GameEngineService GameEngine
 @inject NavigationManager Navigation
 
@@ -28,17 +28,36 @@
 
         @if (playerNames.Count > 0)
         {
-            <ul class="player-setup-list">
+            <ul class="player-setup-list @(isShuffling ? "shuffling" : "")">
                 @foreach (var (name, index) in playerNames.Select((n, i) => (n, i)))
                 {
-                    <li>
-                        <span>@name</span>
+                    <li class="player-setup-item @(isShuffling ? "shuffle-anim" : "")" style="animation-delay: @(index * 60)ms">
+                        <span class="player-order-badge">@(index + 1)</span>
+                        <span class="player-item-name">@name</span>
                         <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemovePlayer(index)">
-                            Remover
+                            ✕
                         </button>
                     </li>
                 }
             </ul>
+
+            @if (playerNames.Count >= 2)
+            {
+                <button type="button"
+                        class="btn btn-shuffle w-100 mt-3"
+                        @onclick="ShufflePlayers"
+                        disabled="@isShuffling">
+                    @if (isShuffling)
+                    {
+                        <span class="shuffle-spinner">⟳</span>
+                        <span>Sorteando...</span>
+                    }
+                    else
+                    {
+                        <span>🎲 Sortear Ordem</span>
+                    }
+                </button>
+            }
         }
         else
         {
@@ -81,6 +100,7 @@
     private readonly List<string> playerNames = [];
     private string? errorMessage;
     private int sessionDurationMinutes;
+    private bool isShuffling;
     private readonly int questionCount = GameEngineService.LoadCards().Count(c => c.Type == CardType.Question);
 
     private bool CanAdd => !string.IsNullOrWhiteSpace(newPlayerName);
@@ -111,6 +131,32 @@
     {
         if (e.Key == "Enter")
             AddPlayer();
+    }
+
+    private async Task ShufflePlayers()
+    {
+        if (playerNames.Count < 2 || isShuffling)
+            return;
+
+        isShuffling = true;
+        StateHasChanged();
+
+        // Faz 3 embaralhamentos rápidos com delay para efeito visual
+        var rng = new Random();
+        for (var round = 0; round < 3; round++)
+        {
+            await Task.Delay(220);
+            for (var i = playerNames.Count - 1; i > 0; i--)
+            {
+                var j = rng.Next(i + 1);
+                (playerNames[i], playerNames[j]) = (playerNames[j], playerNames[i]);
+            }
+            StateHasChanged();
+        }
+
+        await Task.Delay(180);
+        isShuffling = false;
+        StateHasChanged();
     }
 
     private void StartGame()

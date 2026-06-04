@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets/NaoComemoreAntesdoFim.styles.css"
     },
     {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/constellation-bg.svg",
+      "PackagePath": "staticwebassets/constellation-bg.svg"
+    },
+    {
       "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/css/app.css",
       "PackagePath": "staticwebassets/css/app.css"
     },
