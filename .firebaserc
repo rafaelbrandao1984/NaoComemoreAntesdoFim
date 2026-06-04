@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "aera-cloud"
+  },
+  "targets": {
+    "aera-cloud": {
+      "hosting": {
+        "jogosud": [
+          "meu-jogo-sud"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
