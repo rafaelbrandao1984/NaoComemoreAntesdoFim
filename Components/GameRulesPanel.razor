@@ -1,0 +1,16 @@
+<div class="rules-panel @CssClass">
+    <h3 class="rules-panel-title">Regras do jogo</h3>
+    <ol class="rules-list">
+        @foreach (var rule in GameRules.Items)
+        {
+            <li>@rule</li>
+        }
+    </ol>
+    <p class="rules-procedure">@GameRules.CardProcedure</p>
+    <p class="rules-main">@GameRules.MainRule</p>
+</div>
+
+@code {
+    [Parameter]
+    public string CssClass { get; set; } = string.Empty;
+}

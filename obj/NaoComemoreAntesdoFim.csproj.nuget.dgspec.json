@@ -1,0 +1,95 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/rbrandao/NaoComemoreAntesdoFim/NaoComemoreAntesdoFim.csproj": {}
+  },
+  "projects": {
+    "/home/rbrandao/NaoComemoreAntesdoFim/NaoComemoreAntesdoFim.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/rbrandao/NaoComemoreAntesdoFim/NaoComemoreAntesdoFim.csproj",
+        "projectName": "NaoComemoreAntesdoFim",
+        "projectPath": "/home/rbrandao/NaoComemoreAntesdoFim/NaoComemoreAntesdoFim.csproj",
+        "packagesPath": "/home/rbrandao/.nuget/packages/",
+        "outputPath": "/home/rbrandao/NaoComemoreAntesdoFim/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/rbrandao/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Components.WebAssembly": {
+              "target": "Package",
+              "version": "[8.0.27, )"
+            },
+            "Microsoft.AspNetCore.Components.WebAssembly.DevServer": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.27, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.27, )",
+              "autoReferenced": true
+            },
+            "Microsoft.NET.Sdk.WebAssembly.Pack": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.27, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
+              "version": "[8.0.27, 8.0.27]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.127/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "browser-wasm": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

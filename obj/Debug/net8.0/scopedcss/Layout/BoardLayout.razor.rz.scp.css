@@ -1,0 +1,32 @@
+.board-layout[b-y7g7kpr57f] {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.board-layout-header[b-y7g7kpr57f] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1.25rem;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.35);
+    background: rgba(6, 20, 40, 0.9);
+    flex-shrink: 0;
+}
+
+.board-layout-exit[b-y7g7kpr57f] {
+    color: #e8d5a3;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.board-layout-exit:hover[b-y7g7kpr57f] {
+    color: #f5e6b8;
+}
+
+.board-layout-main[b-y7g7kpr57f] {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0.5rem 1rem 1rem;
+}

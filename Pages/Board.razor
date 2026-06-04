@@ -1,0 +1,557 @@
+@page "/board"
+@layout BoardLayout
+@inject GameEngineService GameEngine
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<PageTitle>Tabuleiro — Não Comemore Antes do Fim</PageTitle>
+
+@if (!GameEngine.IsGameStarted)
+{
+    <div class="board-empty">
+        <p>Nenhuma partida em andamento.</p>
+        <a class="btn btn-primary btn-lg" href="/">Voltar à configuração</a>
+    </div>
+}
+else if (GameEngine.IsGameEnded)
+{
+    <div class="game-end-screen">
+        <h1>Fim de Jogo</h1>
+        <p class="game-end-reason">@GetEndGameMessage()</p>
+        @{
+            var champion = GameEngine.GetWinnerPlayer() ?? GameEngine.GetChocolateLeader();
+        }
+        @if (champion is not null && champion.Chocolates > 0)
+        {
+            <p class="game-end-champion">Quem tem mais chocolates: <strong>@champion.Name</strong> (🍫 @champion.Chocolates)</p>
+        }
+        @if (GameEngine.EndReason == GameEndReason.QuestionsExhausted)
+        {
+            <p class="game-end-note">Se sobrou chocolate na caixa, divida entre todos os jogadores.</p>
+        }
+        <ol class="final-ranking">
+            @foreach (var (player, index) in GameEngine.GetRankedPlayers().Select((p, i) => (p, i)))
+            {
+                <li class="final-ranking-item @(index == 0 ? "winner" : "")">
+                    <span class="rank">@(index + 1)º</span>
+                    <span class="name">@player.Name</span>
+                    <span class="score">
+                        <span class="chocolate-count">🍫 @player.Chocolates</span>
+                    </span>
+                </li>
+            }
+        </ol>
+        <button type="button" class="btn btn-primary btn-lg" @onclick="GoHome">
+            Nova partida
+        </button>
+    </div>
+}
+else
+{
+    <div class="board-page">
+        <div class="game-status-bar">
+            <span class="game-clock" role="timer" aria-live="polite">⏱ @FormatGameClock()</span>
+            <span>Perguntas: @GameEngine.QuestionsRemaining</span>
+            <span>Ações: @GameEngine.ActionCardsRemaining</span>
+            <button type="button" class="btn btn-sm btn-outline-light rules-toggle" @onclick="ToggleRules">
+                @(showRules ? "Ocultar regras" : "Regras")
+            </button>
+        </div>
+        @if (showRules)
+        {
+            <GameRulesPanel />
+        }
+    <div class="game-board">
+        <aside class="scoreboard">
+            <h2>Placar</h2>
+            <ul class="scoreboard-list">
+                @foreach (var player in GameEngine.Players)
+                {
+                    var isCurrent = GameEngine.CurrentPlayer?.Id == player.Id;
+                    <li class="scoreboard-item @(isCurrent ? "current-turn" : "")">
+                        <span class="player-name">@player.Name</span>
+                        <span class="player-scores">
+                            <span class="chocolate-count" title="Chocolates">🍫 @player.Chocolates</span>
+                        </span>
+                        @if (isCurrent)
+                        {
+                            <span class="turn-badge">Sua vez</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </aside>
+
+        <main class="board-center">
+            @if (GameEngine.CurrentPlayer is not null)
+            {
+                <p class="current-player-banner">
+                    Vez de: <strong>@GameEngine.CurrentPlayer.Name</strong>
+                </p>
+            }
+
+            @if (GameEngine.CurrentCard is null)
+            {
+                <button class="btn btn-draw-card"
+                        type="button"
+                        @onclick="DrawCard"
+                        disabled="@(isDrawing || GameEngine.QuestionsRemaining == 0)">
+                    Sortear Carta
+                </button>
+                @if (GameEngine.QuestionsRemaining == 0)
+                {
+                    <p class="text-muted mt-2">As cartas de pergunta acabaram.</p>
+                }
+            }
+            else
+            {
+                <div class="board-play-column">
+                    @if (ShowAnswerTimer)
+                    {
+                        <div class="answer-timer @(answerSecondsRemaining <= 10 ? "answer-timer-urgent" : "")" role="timer" aria-live="polite">
+                            <span class="answer-timer-label">Mostrar resposta em</span>
+                            <span class="answer-timer-value">@FormatTimer(answerSecondsRemaining)</span>
+                        </div>
+                    }
+
+                    <div class="card-scene">
+                        <div class="card-flip @(GameEngine.CardRevealed ? "is-flipped" : "")">
+                            <div class="card-face card-back" @onclick="RevealCard">
+                                <div class="card-back-inner">
+                                    <p class="card-back-title">NÃO</p>
+                                    <p class="card-back-title">COMEMORE</p>
+                                    <p class="card-back-title">ANTES DO</p>
+                                    <p class="card-back-title">FIM</p>
+                                    <small class="card-back-hint">Toque para virar</small>
+                                </div>
+                            </div>
+                            <div class="card-face card-front @GetCardTypeClass(GameEngine.CurrentCard)">
+                                <span class="card-number">@GameEngine.CurrentCard.Id</span>
+                                <div class="card-front-content">
+                                    <span class="card-type-label">@GetCardTypeLabel(GameEngine.CurrentCard)</span>
+                                    <p class="card-text">@GameEngine.CurrentCard.Text</p>
+
+                                    @if (GameEngineService.IsQuestionCard(GameEngine.CurrentCard))
+                                    {
+                                        @if (!GameEngine.CardRevealed)
+                                        {
+                                            <p class="card-number-hint">Diga em voz alta: Pergunta nº @GameEngine.CurrentCard.Id</p>
+                                        }
+                                        @if (!GameEngine.ShowAnswer)
+                                        {
+                                            <button type="button" class="btn btn-primary btn-sm" @onclick="RevealAnswer">
+                                                Ver Resposta
+                                            </button>
+                                        }
+                                        else if (!string.IsNullOrEmpty(GameEngine.CurrentCard.Answer))
+                                        {
+                                            <p class="card-answer"><strong>Resposta:</strong> @GameEngine.CurrentCard.Answer</p>
+                                        }
+                                    }
+
+                                    @if (GameEngine.EffectApplied && !ShowGradingPanel && !ShowGradingResult && !ShowSocialChallenge)
+                                    {
+                                        <p class="effect-applied-msg">Efeito aplicado!</p>
+                                    }
+                                </div>
+                                <span class="card-crown" aria-hidden="true">♛</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (ShowGradingPanel)
+                    {
+                        <div class="card-actions-panel question-grading">
+                            <p class="grading-label">Conferiu com o gabarito?</p>
+                            <div class="grading-buttons">
+                                <button type="button"
+                                        class="btn btn-grade-correct"
+                                        @onclick="() => RecordAnswer(correct: true)">
+                                    ✓ Acertou (+@GameRules.ChocolatesPerCorrectAnswer 🍫)
+                                </button>
+                                <button type="button"
+                                        class="btn btn-grade-wrong"
+                                        @onclick="() => RecordAnswer(correct: false)">
+                                    ✗ Errou
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    else if (ShowGradingResult)
+                    {
+                        <div class="card-actions-panel">
+                            <p class="grading-result @(GameEngine.LastQuestionWasCorrect!.Value ? "correct" : "wrong")">
+                                @(GameEngine.LastQuestionWasCorrect.Value
+                                    ? $"Acertou! +{GameRules.ChocolatesPerCorrectAnswer} chocolate."
+                                    : "Errou — sem chocolate desta pergunta.")
+                            </p>
+                        </div>
+                    }
+                    else if (NeedsDonationTargets)
+                    {
+                        <div class="card-actions-panel target-selection">
+                            <label class="form-label" for="donorPlayer">Quem doa os chocolates:</label>
+                            <select id="donorPlayer" class="form-select mb-2" @bind="donorPlayerIdString">
+                                <option value="">— Selecione —</option>
+                                @foreach (var player in OtherPlayers)
+                                {
+                                    <option value="@player.Id.ToString()">@player.Name (🍫@player.Chocolates)</option>
+                                }
+                            </select>
+                            <label class="form-label" for="recipientPlayer">Quem recebe:</label>
+                            <select id="recipientPlayer" class="form-select" @bind="recipientPlayerIdString">
+                                <option value="">— Selecione —</option>
+                                @foreach (var player in OtherPlayers)
+                                {
+                                    <option value="@player.Id.ToString()">@player.Name</option>
+                                }
+                            </select>
+                            <button type="button"
+                                    class="btn btn-warning mt-2 w-100"
+                                    @onclick="ApplyDonationEffect"
+                                    disabled="@(!CanApplyDonation)">
+                                Aplicar doação
+                            </button>
+                        </div>
+                    }
+                    else if (NeedsTargetSelection)
+                    {
+                        <div class="card-actions-panel target-selection">
+                            <label class="form-label" for="targetPlayer">Escolha um jogador:</label>
+                            <select id="targetPlayer" class="form-select" @bind="selectedTargetIdString">
+                                <option value="">— Selecione —</option>
+                                @foreach (var player in OtherPlayers)
+                                {
+                                    <option value="@player.Id.ToString()">@player.Name (🍫@player.Chocolates)</option>
+                                }
+                            </select>
+                            <button type="button"
+                                    class="btn btn-warning mt-2 w-100"
+                                    @onclick="ApplyTargetEffect"
+                                    disabled="@(!CanApplyTarget)">
+                                Aplicar efeito
+                            </button>
+                        </div>
+                    }
+                    else if (ShowSocialChallenge)
+                    {
+                        <div class="card-actions-panel">
+                            <p class="grading-label">Façam o desafio na mesa, depois confirmem:</p>
+                            <button type="button" class="btn btn-primary w-100" @onclick="ConfirmSocialChallenge">
+                                Desafio feito!
+                            </button>
+                        </div>
+                    }
+
+                    <button type="button"
+                            class="btn btn-secondary btn-lg btn-pass-turn"
+                            @onclick="PassTurn"
+                            disabled="@(!GameEngine.CanPassTurn())">
+                        Passar a Vez
+                    </button>
+                </div>
+            }
+        </main>
+    </div>
+
+    <footer class="board-footer">
+        <button type="button" class="btn btn-outline-danger btn-lg" @onclick="EndGame">
+            Encerrar Jogo
+        </button>
+    </footer>
+    </div>
+}
+
+@code {
+    private bool isDrawing;
+    private bool showRules;
+    private string selectedTargetIdString = string.Empty;
+    private string donorPlayerIdString = string.Empty;
+    private string recipientPlayerIdString = string.Empty;
+    private int answerSecondsRemaining = -1;
+    private int _answerTimerGeneration;
+    private CancellationTokenSource? _answerTimerCts;
+    private CancellationTokenSource? _gameClockCts;
+
+    private bool ShowAnswerTimer =>
+        answerSecondsRemaining >= 0
+        && GameEngine.CurrentCard is not null
+        && GameEngineService.IsQuestionCard(GameEngine.CurrentCard)
+        && GameEngine.CardRevealed
+        && !GameEngine.ShowAnswer;
+
+    private bool ShowGradingPanel => GameEngine.CurrentQuestionNeedsGrading();
+
+    private bool ShowGradingResult =>
+        GameEngine.EffectApplied
+        && GameEngine.LastQuestionWasCorrect.HasValue
+        && GameEngine.CurrentCard is not null
+        && GameEngineService.IsQuestionCard(GameEngine.CurrentCard);
+
+    private IEnumerable<Player> OtherPlayers =>
+        GameEngine.CurrentPlayer is null
+            ? []
+            : GameEngine.GetOtherPlayers(GameEngine.CurrentPlayer.Id);
+
+    private bool NeedsTargetSelection => GameEngine.CurrentCardNeedsTargetSelection();
+
+    private bool NeedsDonationTargets => GameEngine.CurrentCardNeedsDonationTargets();
+
+    private bool ShowSocialChallenge => GameEngine.SocialChallengePending;
+
+    private bool CanApplyTarget =>
+        Guid.TryParse(selectedTargetIdString, out _);
+
+    private bool CanApplyDonation =>
+        Guid.TryParse(donorPlayerIdString, out var donorId)
+        && Guid.TryParse(recipientPlayerIdString, out var recipientId)
+        && donorId != recipientId;
+
+    protected override void OnInitialized()
+    {
+        GameEngine.StateChanged += OnStateChanged;
+
+        if (!GameEngine.IsGameStarted)
+            Navigation.NavigateTo("/");
+        else
+        {
+            GameEngine.RefreshEndConditions();
+            _ = StartGameClockAsync();
+        }
+    }
+
+    private void OnStateChanged() =>
+        InvokeAsync(async () =>
+        {
+            await SyncAnswerTimerAsync();
+            StateHasChanged();
+        });
+
+    private void DrawCard()
+    {
+        if (GameEngine.CurrentCard is not null)
+            return;
+
+        isDrawing = true;
+        try
+        {
+            GameEngine.DrawCard();
+            selectedTargetIdString = string.Empty;
+            donorPlayerIdString = string.Empty;
+            recipientPlayerIdString = string.Empty;
+        }
+        catch (InvalidOperationException)
+        {
+            GameEngine.CheckTimeLimit();
+        }
+        finally
+        {
+            isDrawing = false;
+        }
+    }
+
+    private void RevealCard() => GameEngine.RevealCard();
+
+    private void RevealAnswer()
+    {
+        StopAnswerTimer();
+        GameEngine.RevealAnswer();
+    }
+
+    private void RecordAnswer(bool correct) => GameEngine.RecordQuestionResult(correct);
+
+    private void EndGame()
+    {
+        StopAnswerTimer();
+        GameEngine.EndGame();
+    }
+
+    private void GoHome()
+    {
+        StopGameClock();
+        GameEngine.ResetGame();
+        Navigation.NavigateTo("/");
+    }
+
+    private void ApplyTargetEffect()
+    {
+        if (!CanApplyTarget)
+            return;
+
+        if (Guid.TryParse(selectedTargetIdString, out var targetId))
+            GameEngine.ApplyActionToTarget(targetId);
+    }
+
+    private void ApplyDonationEffect()
+    {
+        if (!CanApplyDonation)
+            return;
+
+        if (Guid.TryParse(donorPlayerIdString, out var donorId)
+            && Guid.TryParse(recipientPlayerIdString, out var recipientId))
+            GameEngine.ApplyActionToTargets(donorId, recipientId);
+    }
+
+    private void ConfirmSocialChallenge() => GameEngine.ConfirmSocialChallenge();
+
+    private void ToggleRules() => showRules = !showRules;
+
+    private void PassTurn()
+    {
+        StopAnswerTimer();
+        GameEngine.PassTurn();
+        selectedTargetIdString = string.Empty;
+        donorPlayerIdString = string.Empty;
+        recipientPlayerIdString = string.Empty;
+    }
+
+    private string GetEndGameMessage() => GameEngine.EndReason switch
+    {
+        GameEndReason.TimeExpired when GameEngine.SessionDurationLimit.HasValue =>
+            "O tempo combinado da partida chegou ao fim.",
+        GameEndReason.TimeExpired =>
+            $"A partida atingiu o limite de {GameRules.MaxGameDurationHours} horas.",
+        GameEndReason.QuestionsExhausted =>
+            "As cartas de pergunta acabaram.",
+        GameEndReason.Manual => "Partida encerrada pelo grupo.",
+        _ => "Partida finalizada."
+    };
+
+    private async Task SyncAnswerTimerAsync()
+    {
+        var shouldRun = GameEngine.CurrentCard is not null
+            && GameEngineService.IsQuestionCard(GameEngine.CurrentCard)
+            && GameEngine.CardRevealed
+            && !GameEngine.ShowAnswer
+            && !GameEngine.IsGameEnded;
+
+        if (!shouldRun)
+        {
+            StopAnswerTimer();
+            return;
+        }
+
+        if (_answerTimerCts is not null)
+            return;
+
+        await StartAnswerTimerAsync();
+    }
+
+    private async Task StartAnswerTimerAsync()
+    {
+        StopAnswerTimer();
+
+        var generation = ++_answerTimerGeneration;
+        answerSecondsRemaining = GameEngineService.AnswerRevealTimeoutSeconds;
+        _answerTimerCts = new CancellationTokenSource();
+        var token = _answerTimerCts.Token;
+
+        try
+        {
+            while (answerSecondsRemaining > 0 && !token.IsCancellationRequested && generation == _answerTimerGeneration)
+            {
+                await Task.Delay(1000, token);
+                if (token.IsCancellationRequested || generation != _answerTimerGeneration)
+                    return;
+
+                answerSecondsRemaining--;
+                await InvokeAsync(StateHasChanged);
+            }
+
+            if (token.IsCancellationRequested || generation != _answerTimerGeneration)
+                return;
+
+            if (GameEngine.CurrentCard is not null
+                && GameEngineService.IsQuestionCard(GameEngine.CurrentCard)
+                && GameEngine.CardRevealed
+                && !GameEngine.ShowAnswer)
+            {
+                GameEngine.RevealAnswer();
+                answerSecondsRemaining = -1;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+        }
+    }
+
+    private async Task StartGameClockAsync()
+    {
+        StopGameClock();
+        _gameClockCts = new CancellationTokenSource();
+        var token = _gameClockCts.Token;
+
+        try
+        {
+            while (!token.IsCancellationRequested && GameEngine.IsGameStarted && !GameEngine.IsGameEnded)
+            {
+                GameEngine.RefreshEndConditions();
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(1000, token);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+        }
+    }
+
+    private void StopAnswerTimer()
+    {
+        _answerTimerGeneration++;
+        _answerTimerCts?.Cancel();
+        _answerTimerCts?.Dispose();
+        _answerTimerCts = null;
+        answerSecondsRemaining = -1;
+    }
+
+    private void StopGameClock()
+    {
+        _gameClockCts?.Cancel();
+        _gameClockCts?.Dispose();
+        _gameClockCts = null;
+    }
+
+    private string FormatGameClock()
+    {
+        var remaining = GameEngine.TimeRemaining;
+        if (remaining.HasValue)
+            return $"restam {FormatDuration(remaining.Value)}";
+
+        return FormatDuration(GameEngine.Elapsed);
+    }
+
+    private static string FormatDuration(TimeSpan span)
+    {
+        if (span.TotalHours >= 1)
+            return $"{(int)span.TotalHours}:{span.Minutes:D2}:{span.Seconds:D2}";
+
+        return $"{span.Minutes}:{span.Seconds:D2}";
+    }
+
+    private static string FormatTimer(int seconds) =>
+        $"{seconds / 60}:{seconds % 60:D2}";
+
+    private static string GetCardTypeClass(Card card) => card.Type switch
+    {
+        CardType.Question => "card-question",
+        CardType.Reward => "card-reward",
+        CardType.Penalty => "card-penalty",
+        _ => "card-action"
+    };
+
+    private static string GetCardTypeLabel(Card card) => card.Type switch
+    {
+        CardType.Question => "Pergunta",
+        CardType.Reward => "Recompensa",
+        CardType.Penalty => "Penalidade",
+        _ => "Ação"
+    };
+
+    public void Dispose()
+    {
+        StopAnswerTimer();
+        StopGameClock();
+        GameEngine.StateChanged -= OnStateChanged;
+    }
+}

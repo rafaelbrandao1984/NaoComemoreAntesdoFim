@@ -1,0 +1,137 @@
+﻿@page "/"
+@inject GameEngineService GameEngine
+@inject NavigationManager Navigation
+
+<PageTitle>Configuração — Não Comemore Antes do Fim</PageTitle>
+
+<div class="setup-page">
+    <header class="setup-header">
+        <h1>Não Comemore Antes do Fim</h1>
+        <p class="text-muted">Hot Seat na TV — até @GameEngineService.MaxPlayers jogadores.</p>
+        <p class="setup-rules-hint">@GameRules.FormatDurationHint(sessionDurationMinutes)</p>
+    </header>
+
+    <div class="setup-card">
+        <h2>Jogadores</h2>
+
+        <div class="input-group mb-3">
+            <input type="text"
+                   class="form-control form-control-lg"
+                   placeholder="Nome do jogador"
+                   @bind="newPlayerName"
+                   @bind:event="oninput"
+                   @onkeydown="HandleKeyDown" />
+            <button class="btn btn-primary btn-lg" type="button" @onclick="AddPlayer" disabled="@(!CanAdd)">
+                Adicionar
+            </button>
+        </div>
+
+        @if (playerNames.Count > 0)
+        {
+            <ul class="player-setup-list">
+                @foreach (var (name, index) in playerNames.Select((n, i) => (n, i)))
+                {
+                    <li>
+                        <span>@name</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemovePlayer(index)">
+                            Remover
+                        </button>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p class="text-muted">Adicione pelo menos 2 jogadores.</p>
+        }
+
+        <div class="setup-duration mt-4">
+            <label class="form-label" for="sessionDuration">Tempo da partida (opcional)</label>
+            <select id="sessionDuration" class="form-select form-select-lg" @bind="sessionDurationMinutes">
+                <option value="0">Sem limite menor (até @GameRules.MaxGameDurationHours h)</option>
+                <option value="30">30 minutos</option>
+                <option value="45">45 minutos</option>
+                <option value="60">1 hora</option>
+                <option value="90">1 hora e 30 min</option>
+                <option value="120">2 horas</option>
+            </select>
+            <p class="text-muted small mt-2 mb-0">
+                O jogo também termina quando acabarem as @questionCount cartas de pergunta.
+            </p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-warning mt-3" role="alert">@errorMessage</div>
+        }
+
+        <button class="btn btn-primary btn-lg w-100 mt-4"
+                type="button"
+                @onclick="StartGame"
+                disabled="@(playerNames.Count < 2)">
+            Começar Jogo
+        </button>
+    </div>
+
+    <GameRulesPanel CssClass="setup-rules-card" />
+</div>
+
+@code {
+    private string newPlayerName = string.Empty;
+    private readonly List<string> playerNames = [];
+    private string? errorMessage;
+    private int sessionDurationMinutes;
+    private readonly int questionCount = GameEngineService.LoadCards().Count(c => c.Type == CardType.Question);
+
+    private bool CanAdd => !string.IsNullOrWhiteSpace(newPlayerName);
+
+    private void AddPlayer()
+    {
+        if (!CanAdd)
+            return;
+
+        if (playerNames.Count >= GameEngineService.MaxPlayers)
+        {
+            errorMessage = $"Máximo de {GameEngineService.MaxPlayers} jogadores.";
+            return;
+        }
+
+        playerNames.Add(newPlayerName.Trim());
+        newPlayerName = string.Empty;
+        errorMessage = null;
+    }
+
+    private void RemovePlayer(int index)
+    {
+        if (index >= 0 && index < playerNames.Count)
+            playerNames.RemoveAt(index);
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            AddPlayer();
+    }
+
+    private void StartGame()
+    {
+        if (playerNames.Count < 2)
+        {
+            errorMessage = "É necessário pelo menos 2 jogadores para começar.";
+            return;
+        }
+
+        TimeSpan? limit = sessionDurationMinutes > 0
+            ? TimeSpan.FromMinutes(sessionDurationMinutes)
+            : null;
+
+        GameEngine.InitializeGame(playerNames, limit);
+        if (!GameEngine.IsGameStarted)
+        {
+            errorMessage = "Não foi possível iniciar o jogo. Verifique os nomes.";
+            return;
+        }
+
+        Navigation.NavigateTo("/board");
+    }
+}
