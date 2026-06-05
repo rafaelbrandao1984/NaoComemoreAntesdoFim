@@ -3,12 +3,45 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Não Comemore Antes do Fim</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- SEO primário -->
+    <title>Não Comemore Antes do Fim — Jogo de Perguntas</title>
+    <meta name="description" content="Jogo de perguntas e desafios para grupos. Responda certo, ganhe chocolates e pontos. Diversão garantida para todas as idades!" />
+    <meta name="keywords" content="jogo de perguntas, quiz, jogo de mesa, família, chocolates, desafios, diversão" />
+    <meta name="author" content="Não Comemore Antes do Fim" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (compartilhamento social) -->
+    <meta property="og:title" content="Não Comemore Antes do Fim — Jogo de Perguntas" />
+    <meta property="og:description" content="Jogo online de perguntas e desafios para grupos. Responda certo, ganhe chocolates e pontos!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/icon-192.png" />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Não Comemore Antes do Fim" />
+    <meta name="twitter:description" content="Jogo online de perguntas e desafios para grupos. Responda certo, ganhe chocolates e pontos!" />
+    <meta name="twitter:image" content="/icon-192.png" />
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#050e2a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Não Comemore" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+
     <base href="/" />
+
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Estilos -->
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -17,17 +50,17 @@
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
+        <svg class="loading-progress" role="img" aria-label="Carregando o jogo">
             <circle r="40%" cx="50%" cy="50%" />
             <circle r="40%" cx="50%" cy="50%" />
         </svg>
         <div class="loading-progress-text"></div>
     </div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+    <div id="blazor-error-ui" role="alert">
+        Ocorreu um erro inesperado.
+        <a href="" class="reload">Recarregar</a>
+        <a class="dismiss" aria-label="Fechar">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "rWBt/j8FNstB1kYqby+/WA9CqHqMZKpmRupIF8oeAEk=",
+  "Hash": "hnuyfWb6/EyTNNiza33b8SLqvMQIBOMxPLm3mLGPtPg=",
   "Source": "NaoComemoreAntesdoFim",
   "BasePath": "/",
   "Mode": "Root",
@@ -7976,6 +7976,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/index.html"
+    },
+    {
+      "Identity": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/manifest.json",
+      "SourceId": "NaoComemoreAntesdoFim",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "manifest.json",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/manifest.json"
     },
     {
       "Identity": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/sample-data/weather.json",

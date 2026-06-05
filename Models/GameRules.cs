@@ -6,6 +6,7 @@ public static class GameRules
     public const int MaxGameDurationHours = 2;
     public const int AnswerTimeLimitSeconds = 60;
     public const int ChocolatesPerCorrectAnswer = 1;
+    public const int PointsPerCorrectAnswer = 5;
 
     public const string MainRule = "REGRA PRINCIPAL: DIVIRTAM-SE!";
 
@@ -13,7 +14,7 @@ public static class GameRules
     [
         "Siga rigorosamente os comandos das cartas.",
         "Acabar o chocolate da caixa do jogo não significa fim de jogo.",
-        "Cada resposta correta vale 1 chocolate.",
+        "Cada resposta correta vale 1 chocolate e 5 pontos.",
         "Não coma nenhum chocolate seu, a não ser que o próprio jogo mande.",
         "Os chocolates devem ficar à vista de todos os competidores.",
         "Cada pergunta tem no máximo 1 minuto para ser respondida.",

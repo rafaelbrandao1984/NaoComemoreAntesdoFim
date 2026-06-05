@@ -4,6 +4,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Compressão Brotli/GZip para produção — reduz tamanho do bundle ~70% -->
+    <BlazorEnableCompression>true</BlazorEnableCompression>
+    <CompressionEnabled>true</CompressionEnabled>
   </PropertyGroup>
 
   <ItemGroup>

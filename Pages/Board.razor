@@ -21,9 +21,9 @@ else if (GameEngine.IsGameEnded)
         @{
             var champion = GameEngine.GetWinnerPlayer() ?? GameEngine.GetChocolateLeader();
         }
-        @if (champion is not null && champion.Chocolates > 0)
+        @if (champion is not null && (champion.Points > 0 || champion.Chocolates > 0))
         {
-            <p class="game-end-champion">Quem tem mais chocolates: <strong>@champion.Name</strong> (🍫 @champion.Chocolates)</p>
+            <p class="game-end-champion">Quem mais pontuou: <strong>@champion.Name</strong> (⭐ @champion.Points pts · 🍫 @champion.Chocolates)</p>
         }
         @if (GameEngine.EndReason == GameEndReason.QuestionsExhausted)
         {
@@ -36,6 +36,7 @@ else if (GameEngine.IsGameEnded)
                     <span class="rank">@(index + 1)º</span>
                     <span class="name">@player.Name</span>
                     <span class="score">
+                        <span class="points-count" title="Pontos">⭐ @player.Points pts</span>
                         <span class="chocolate-count">🍫 @player.Chocolates</span>
                     </span>
                 </li>
@@ -71,6 +72,7 @@ else
                     <li class="scoreboard-item @(isCurrent ? "current-turn" : "")">
                         <span class="player-name">@player.Name</span>
                         <span class="player-scores">
+                            <span class="points-count" title="Pontos">⭐ @player.Points pts</span>
                             <span class="chocolate-count" title="Chocolates">🍫 @player.Chocolates</span>
                         </span>
                         @if (isCurrent)
@@ -137,21 +139,54 @@ else
                                         {
                                             <p class="card-number-hint">Diga em voz alta: Pergunta nº @GameEngine.CurrentCard.Id</p>
                                         }
-                                        @if (!GameEngine.ShowAnswer)
+
+                                        @if (GameEngine.CurrentCard.HasMultipleChoice && GameEngine.CardRevealed)
                                         {
-                                            <button type="button" class="btn btn-primary btn-sm" @onclick="RevealAnswer">
-                                                Ver Resposta
-                                            </button>
+                                            <div class="mc-options">
+                                                @foreach (var opt in new[] { 'A', 'B', 'C' })
+                                                {
+                                                    var label = opt switch { 'A' => GameEngine.CurrentCard.OptionA, 'B' => GameEngine.CurrentCard.OptionB, _ => GameEngine.CurrentCard.OptionC };
+                                                    var isSelected = GameEngine.SelectedOption == opt;
+                                                    var isCorrect  = opt == GameEngine.CurrentCard.CorrectOption;
+                                                    var answered   = GameEngine.EffectApplied;
+                                                    var css = answered
+                                                        ? (isCorrect ? "mc-btn mc-btn-correct" : (isSelected ? "mc-btn mc-btn-wrong" : "mc-btn mc-btn-neutral"))
+                                                        : "mc-btn";
+                                                    <button type="button"
+                                                            class="@css"
+                                                            disabled="@answered"
+                                                            @onclick="() => SelectOption(opt)">
+                                                        <span class="mc-letter">@opt</span>
+                                                        <span class="mc-text">@label</span>
+                                                    </button>
+                                                }
+                                            </div>
+                                            @if (GameEngine.EffectApplied && !string.IsNullOrEmpty(GameEngine.CurrentCard.Answer))
+                                            {
+                                                <p class="card-answer"><strong>Resposta completa:</strong> @GameEngine.CurrentCard.Answer</p>
+                                            }
                                         }
-                                        else if (!string.IsNullOrEmpty(GameEngine.CurrentCard.Answer))
+                                        else if (!GameEngine.CurrentCard.HasMultipleChoice)
                                         {
-                                            <p class="card-answer"><strong>Resposta:</strong> @GameEngine.CurrentCard.Answer</p>
+                                            @if (!GameEngine.ShowAnswer)
+                                            {
+                                                <button type="button" class="btn btn-primary btn-sm" @onclick="RevealAnswer">
+                                                    Ver Resposta
+                                                </button>
+                                            }
+                                            else if (!string.IsNullOrEmpty(GameEngine.CurrentCard.Answer))
+                                            {
+                                                <p class="card-answer"><strong>Resposta:</strong> @GameEngine.CurrentCard.Answer</p>
+                                            }
                                         }
                                     }
 
                                     @if (GameEngine.EffectApplied && !ShowGradingPanel && !ShowGradingResult && !ShowSocialChallenge)
                                     {
-                                        <p class="effect-applied-msg">Efeito aplicado!</p>
+                                        @if (!GameEngineService.IsQuestionCard(GameEngine.CurrentCard) || !GameEngine.CurrentCard.HasMultipleChoice)
+                                        {
+                                            <p class="effect-applied-msg">Efeito aplicado!</p>
+                                        }
                                     }
                                 </div>
                                 <span class="card-crown" aria-hidden="true">♛</span>
@@ -167,7 +202,7 @@ else
                                 <button type="button"
                                         class="btn btn-grade-correct"
                                         @onclick="() => RecordAnswer(correct: true)">
-                                    ✓ Acertou (+@GameRules.ChocolatesPerCorrectAnswer 🍫)
+                                    ✓ Acertou (+@GameRules.PointsPerCorrectAnswer pts · +@GameRules.ChocolatesPerCorrectAnswer 🍫)
                                 </button>
                                 <button type="button"
                                         class="btn btn-grade-wrong"
@@ -182,8 +217,10 @@ else
                         <div class="card-actions-panel">
                             <p class="grading-result @(GameEngine.LastQuestionWasCorrect!.Value ? "correct" : "wrong")">
                                 @(GameEngine.LastQuestionWasCorrect.Value
-                                    ? $"Acertou! +{GameRules.ChocolatesPerCorrectAnswer} chocolate."
-                                    : "Errou — sem chocolate desta pergunta.")
+                                    ? $"Acertou! +{GameRules.PointsPerCorrectAnswer} pontos e +{GameRules.ChocolatesPerCorrectAnswer} chocolate."
+                                    : (GameEngine.CurrentCard?.HasMultipleChoice == true
+                                        ? $"Errou! A resposta correta era a opção {GameEngine.CurrentCard.CorrectOption}."
+                                        : "Errou — sem pontos nem chocolate desta pergunta."))
                             </p>
                         </div>
                     }
@@ -359,6 +396,12 @@ else
     }
 
     private void RecordAnswer(bool correct) => GameEngine.RecordQuestionResult(correct);
+
+    private void SelectOption(char option)
+    {
+        StopAnswerTimer();
+        GameEngine.SelectMultipleChoiceOption(option);
+    }
 
     private void EndGame()
     {

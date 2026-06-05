@@ -49,6 +49,10 @@
       "PackagePath": "staticwebassets/index.html"
     },
     {
+      "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/manifest.json",
+      "PackagePath": "staticwebassets/manifest.json"
+    },
+    {
       "Id": "/home/rbrandao/NaoComemoreAntesdoFim/wwwroot/sample-data/weather.json",
       "PackagePath": "staticwebassets/sample-data/weather.json"
     },

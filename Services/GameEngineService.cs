@@ -28,6 +28,8 @@ public partial class GameEngineService
     public GameEndReason EndReason { get; private set; }
     public Guid? WinnerPlayerId { get; private set; }
     public bool SocialChallengePending { get; private set; }
+    /// <summary>Opção selecionada pelo jogador ('A', 'B' ou 'C'). Nulo se ainda não selecionou.</summary>
+    public char? SelectedOption { get; private set; }
 
     private readonly List<Player> _players = [];
     private bool _turnAdvancedByCard;
@@ -76,6 +78,7 @@ public partial class GameEngineService
         CardRevealed = false;
         EffectApplied = false;
         LastQuestionWasCorrect = null;
+        SelectedOption = null;
         _turnAdvancedByCard = false;
         SocialChallengePending = false;
         EndReason = GameEndReason.None;
@@ -118,6 +121,7 @@ public partial class GameEngineService
         CardRevealed = false;
         EffectApplied = false;
         LastQuestionWasCorrect = null;
+        SelectedOption = null;
         _turnAdvancedByCard = false;
         SocialChallengePending = false;
 
@@ -151,11 +155,34 @@ public partial class GameEngineService
 
         LastQuestionWasCorrect = correct;
         if (correct)
+        {
             current.Chocolates += GameRules.ChocolatesPerCorrectAnswer;
+            current.Points += GameRules.PointsPerCorrectAnswer;
+        }
 
         EffectApplied = true;
         CheckTimeLimit();
         NotifyStateChanged();
+    }
+
+    /// <summary>
+    /// Chamado quando o jogador seleciona uma das opções A/B/C.
+    /// Valida automaticamente e registra o resultado sem árbitro humano.
+    /// </summary>
+    public void SelectMultipleChoiceOption(char selectedOption)
+    {
+        if (CurrentCard is null || !IsQuestionCard(CurrentCard) || EffectApplied)
+            return;
+
+        if (!CurrentCard.HasMultipleChoice)
+            return;
+
+        var isCorrect = char.ToUpper(selectedOption) == char.ToUpper(CurrentCard.CorrectOption);
+        SelectedOption = char.ToUpper(selectedOption);
+
+        // Garante que a resposta seja revelada junto com o resultado
+        ShowAnswer = true;
+        RecordQuestionResult(isCorrect);
     }
 
     public void ConfirmSocialChallenge()
@@ -173,6 +200,10 @@ public partial class GameEngineService
         if (CurrentCard is null || !IsQuestionCard(CurrentCard) || EffectApplied)
             return false;
 
+        // Cartas com múltipla escolha se auto-corrigem — não precisam de árbitro
+        if (CurrentCard.HasMultipleChoice)
+            return false;
+
         return ShowAnswer;
     }
 
@@ -181,15 +212,19 @@ public partial class GameEngineService
         if (!IsGameStarted || IsGameEnded || CurrentCard is null)
             return false;
 
+        // Carta de pergunta: precisa ter sido corrigida (efeito aplicado)
         if (IsQuestionCard(CurrentCard) && !EffectApplied)
             return false;
 
+        // Carta que precisa de seleção de alvo ainda não foi aplicada
         if (CurrentCardNeedsTargetSelection())
             return false;
 
-        if (RequiresDonationTargets(CurrentCard.ActionCode) && !EffectApplied)
+        // Carta de doação ainda não aplicada
+        if (CurrentCardNeedsDonationTargets())
             return false;
 
+        // Desafio social ainda pendente de confirmação
         if (SocialChallengePending)
             return false;
 
@@ -221,7 +256,8 @@ public partial class GameEngineService
 
     public IReadOnlyList<Player> GetRankedPlayers() =>
         _players
-            .OrderByDescending(p => p.Chocolates)
+            .OrderByDescending(p => p.Points)
+            .ThenByDescending(p => p.Chocolates)
             .ThenBy(p => p.Name)
             .ToList();
 
@@ -238,6 +274,7 @@ public partial class GameEngineService
         CardRevealed = false;
         EffectApplied = false;
         LastQuestionWasCorrect = null;
+        SelectedOption = null;
         _turnAdvancedByCard = false;
         SocialChallengePending = false;
         EndReason = GameEndReason.None;
@@ -265,6 +302,10 @@ public partial class GameEngineService
         if (!IsGameStarted || _players.Count == 0 || IsGameEnded)
             return;
 
+        // Proteção: só passa se o estado atual permite
+        if (!CanPassTurn())
+            return;
+
         CheckTimeLimit();
         if (IsGameEnded)
             return;
@@ -274,6 +315,7 @@ public partial class GameEngineService
         CardRevealed = false;
         EffectApplied = false;
         LastQuestionWasCorrect = null;
+        SelectedOption = null;
         SocialChallengePending = false;
 
         if (!_turnAdvancedByCard)
@@ -291,26 +333,29 @@ public partial class GameEngineService
         if (_players.Count == 0)
             return;
 
-        var attempts = 0;
-        do
+        // Limita a quantos jogadores existem para evitar loop infinito
+        var maxSteps = _players.Count;
+        for (var step = 0; step < maxSteps; step++)
         {
             CurrentPlayerIndex = (CurrentPlayerIndex + 1) % _players.Count;
             var next = _players[CurrentPlayerIndex];
 
             if (next.SkipNextTurn)
             {
+                // Marca que este jogador perdeu a vez e continua procurando o próximo
                 next.SkipNextTurn = false;
-                attempts++;
             }
             else
             {
-                break;
+                // Encontrou jogador válido
+                return;
             }
-        } while (attempts < _players.Count);
+        }
+        // Se todos tinham SkipNextTurn, CurrentPlayerIndex voltou ao início — ok.
     }
 
     public Player? GetChocolateLeader() =>
-        _players.OrderByDescending(p => p.Chocolates).FirstOrDefault();
+        _players.OrderByDescending(p => p.Points).ThenByDescending(p => p.Chocolates).FirstOrDefault();
 
     public Player? GetWinnerPlayer() =>
         WinnerPlayerId is null ? null : _players.FirstOrDefault(p => p.Id == WinnerPlayerId);
@@ -321,8 +366,8 @@ public partial class GameEngineService
     public static bool RequiresTargetPlayer(string actionCode)
     {
         var code = NormalizeActionCode(actionCode);
-        return code is "DrinkWater"
-            or "SkipOtherTurn"
+        // Nota: "DrinkWater" é um desafio social (IsSocialChallengeCard) e NÃO requer seleção de alvo.
+        return code is "SkipOtherTurn"
             or "StealAllChocolates"
             or "StealChocolate"
             or "GiveChocolate"
@@ -468,13 +513,6 @@ public partial class GameEngineService
                     giveTarget.Chocolates += toGive;
                     EffectApplied = true;
                 }
-                break;
-
-            case "ReverseTurn":
-                if (_players.Count > 1)
-                    CurrentPlayerIndex = (CurrentPlayerIndex - 1 + _players.Count) % _players.Count;
-
-                EffectApplied = true;
                 break;
         }
     }
