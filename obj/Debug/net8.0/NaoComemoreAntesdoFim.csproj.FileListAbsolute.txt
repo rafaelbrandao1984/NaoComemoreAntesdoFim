@@ -2080,6 +2080,6 @@ c:\NaoComemoreAntesdoFim\bin\Debug\net8.0\release-test\wwwroot\appsettings.json
 c:\NaoComemoreAntesdoFim\bin\Debug\net8.0\release-test\wwwroot\manifest.json
 c:\NaoComemoreAntesdoFim\bin\Debug\net8.0\release-test\wwwroot\sample-data\weather.json
 c:\NaoComemoreAntesdoFim\bin\Debug\net8.0\release-test\wwwroot\_framework\blazor.boot.json
-c:\NaoComemoreAntesdoFim\obj\Debug\net8.0\compressed\y3s1kuzntd-{0}-cllq517svb-cllq517svb.gz
-c:\NaoComemoreAntesdoFim\obj\Debug\net8.0\compressed\2ujsz079og-{0}-x5ty3ch6sx-x5ty3ch6sx.gz
-c:\NaoComemoreAntesdoFim\obj\Debug\net8.0\compressed\msmtrsxb8k-{0}-3e4wl9yw6w-3e4wl9yw6w.gz
+c:\NaoComemoreAntesdoFim\obj\Debug\net8.0\compressed\y3s1kuzntd-{0}-u7otqr3r4k-u7otqr3r4k.gz
+c:\NaoComemoreAntesdoFim\obj\Debug\net8.0\compressed\2ujsz079og-{0}-cmvaryq0bb-cmvaryq0bb.gz
+c:\NaoComemoreAntesdoFim\obj\Debug\net8.0\compressed\msmtrsxb8k-{0}-m148uflyaw-m148uflyaw.gz

@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "NaoComemoreAntesdoFim",
   "resources": {
-    "hash": "sha256-Vk26T0Nb7YsssnrjhQc3jzxPrrNOQJ+yaA8j+1FsOoU=",
+    "hash": "sha256-qaoDbSmkjTJu7OjRAAuWpw3uWFAoWe/ZG/6NvqiMnO4=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-sn/g61GjVPhViOYQDkq1OMlk0eyS9r2Hi0qgU2o0HIU="
     },
@@ -209,10 +209,10 @@
       "mscorlib.wasm": "sha256-YI5F+NHcYCSuCGvvp5vyTL2orAoMlXo4ep5foTyMfeg=",
       "netstandard.wasm": "sha256-jVzOxH5q4FYYDM01Qwoa/2MjK7CwbDVo6rPFjrBorII=",
       "System.Private.CoreLib.wasm": "sha256-d+N5gZbidgB9OgmPuYn1T6BQWHjajGzz+AvKnZJ+zmA=",
-      "NaoComemoreAntesdoFim.wasm": "sha256-MNe++orwCAmyJNORFq734XosmA0U1SGU5444dRGOmXs="
+      "NaoComemoreAntesdoFim.wasm": "sha256-JkoP3uRpM1mdTq2lYoBWU4e8hEHLoRqWrcKq6dgmua4="
     },
     "pdb": {
-      "NaoComemoreAntesdoFim.pdb": "sha256-Jev6EfeeLn5a2JvLNTtt0h2OEF1+xRqrzHwM5dtqiek="
+      "NaoComemoreAntesdoFim.pdb": "sha256-lCF06xfHo39CcMWCnN54RDP6+efT2h6r+6xHnBs2KIY="
     }
   },
   "cacheBootResources": true,

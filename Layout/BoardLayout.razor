@@ -3,14 +3,26 @@
 
 <div class="board-layout game-app">
     <header class="board-layout-header">
-        <span class="game-title-small">Não Comemore Antes do Fim</span>
-        <div class="board-layout-actions">
-            <button type="button" class="btn btn-sm btn-voice-settings" @onclick="VoiceUi.Open" title="Configurar voz do apresentador">
-                🎙 Configurar Voz
-            </button>
-            <a class="board-layout-exit" href="/">Sair</a>
+        <div class="board-layout-header-side board-layout-header-side--start" aria-hidden="true"></div>
+
+        <h1 class="board-layout-title">Não Comemore Antes do Fim</h1>
+
+        <div class="board-layout-header-side board-layout-header-side--end">
+            <nav class="board-layout-toolbar" aria-label="Ações do tabuleiro">
+                <button type="button"
+                        class="board-toolbar-btn board-toolbar-btn--voice"
+                        @onclick="VoiceUi.Open"
+                        title="Configurar voz do apresentador">
+                    <span class="board-toolbar-icon" aria-hidden="true">🎙</span>
+                    <span class="board-toolbar-label">Voz</span>
+                </button>
+                <a class="board-toolbar-btn board-toolbar-btn--exit" href="/" title="Voltar à configuração">
+                    Sair
+                </a>
+            </nav>
         </div>
     </header>
+
     <main class="board-layout-main">
         @Body
     </main>
