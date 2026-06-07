@@ -851,16 +851,16 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Rafae\\AppData\\Local\\Temp\\cursor-sandbox-cache\\56e526d9f15eb3f463411e92d8c4b207\\nuget": {}
+    "C:\\Users\\Rafae\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\NaoComemoreAntesdoFim.Server.csproj",
+      "projectUniqueName": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\NaoComemoreAntesdoFim.Server.csproj",
       "projectName": "NaoComemoreAntesdoFim.Server",
-      "projectPath": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\NaoComemoreAntesdoFim.Server.csproj",
-      "packagesPath": "C:\\Users\\Rafae\\AppData\\Local\\Temp\\cursor-sandbox-cache\\56e526d9f15eb3f463411e92d8c4b207\\nuget",
-      "outputPath": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\obj\\",
+      "projectPath": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\NaoComemoreAntesdoFim.Server.csproj",
+      "packagesPath": "C:\\Users\\Rafae\\.nuget\\packages\\",
+      "outputPath": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Rafae\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -1494,7 +1494,7 @@ code {
     }
 }
 
-.card-flip.card-reveal-flash {
+.card-flip.card-reveal-flash .card-face {
     filter: drop-shadow(0 0 18px rgba(245, 230, 184, 0.45));
 }
 

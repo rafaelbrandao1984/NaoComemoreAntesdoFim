@@ -1844,16 +1844,16 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Rafae\\AppData\\Local\\Temp\\cursor-sandbox-cache\\56e526d9f15eb3f463411e92d8c4b207\\nuget": {}
+    "C:\\Users\\Rafae\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
+      "projectUniqueName": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
       "projectName": "NaoComemoreAntesdoFim",
-      "projectPath": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
-      "packagesPath": "C:\\Users\\Rafae\\AppData\\Local\\Temp\\cursor-sandbox-cache\\56e526d9f15eb3f463411e92d8c4b207\\nuget",
-      "outputPath": "c:\\NaoComemoreAntesdoFim\\obj\\",
+      "projectPath": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
+      "packagesPath": "C:\\Users\\Rafae\\.nuget\\packages\\",
+      "outputPath": "C:\\NaoComemoreAntesdoFim\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Rafae\\AppData\\Roaming\\NuGet\\NuGet.Config"
