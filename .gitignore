@@ -1,1 +1,5 @@
 firebase-debug.log
+*-gcp-key.json
+gcp-*.json
+**/service-account*.json
+chave-tts.json

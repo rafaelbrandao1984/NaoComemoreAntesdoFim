@@ -1,0 +1,21 @@
+@inject VoiceSettingsUiService VoiceUi
+@implements IDisposable
+
+<VoiceSettingsModal IsOpen="@VoiceUi.IsOpen" IsOpenChanged="OnOpenChanged" />
+
+@code {
+    protected override void OnInitialized() =>
+        VoiceUi.OnChange += HandleChange;
+
+    private void HandleChange() =>
+        InvokeAsync(StateHasChanged);
+
+    private Task OnOpenChanged(bool isOpen)
+    {
+        VoiceUi.SetOpen(isOpen);
+        return Task.CompletedTask;
+    }
+
+    public void Dispose() =>
+        VoiceUi.OnChange -= HandleChange;
+}

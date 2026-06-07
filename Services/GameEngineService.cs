@@ -624,6 +624,7 @@ public partial class GameEngineService
         EffectApplied = false;
         LastQuestionWasCorrect = null;
         SocialChallengePending = false;
+        NotifyStateChanged();
     }
 
     private void NotifyStateChanged() => StateChanged?.Invoke();

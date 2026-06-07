@@ -1,9 +1,15 @@
 @inherits LayoutComponentBase
+@inject VoiceSettingsUiService VoiceUi
 
 <div class="board-layout game-app">
     <header class="board-layout-header">
         <span class="game-title-small">Não Comemore Antes do Fim</span>
-        <a class="board-layout-exit" href="/">Sair</a>
+        <div class="board-layout-actions">
+            <button type="button" class="btn btn-sm btn-voice-settings" @onclick="VoiceUi.Open" title="Configurar voz do apresentador">
+                🎙 Configurar Voz
+            </button>
+            <a class="board-layout-exit" href="/">Sair</a>
+        </div>
     </header>
     <main class="board-layout-main">
         @Body

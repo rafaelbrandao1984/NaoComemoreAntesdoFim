@@ -8,6 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
     padding: 0.55rem 1.25rem;
     border-bottom: 2px solid var(--gold);
     background: rgba(5, 14, 42, 0.95);
@@ -15,6 +16,13 @@
     box-shadow:
         0 1px 0 rgba(201, 162, 39, 0.2),
         0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.board-layout-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-shrink: 0;
 }
 
 .board-layout-exit {
@@ -36,6 +44,5 @@
 .board-layout-main {
     flex: 1;
     min-height: 0;
-    overflow: hidden;
     padding: 0.5rem 1rem 1rem;
 }

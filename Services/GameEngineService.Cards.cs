@@ -173,19 +173,19 @@ public partial class GameEngineService
         {
             Id = 15,
             Type = CardType.Question,
-            Text = "Em qual cidade Abinádi foi martirizado?",
-            Answer = "Cidade de Leí-Néfi. | Mosias 17:13-20",
-            OptionA = "Zaraenla",
-            OptionB = "Cidade de Leí-Néfi",
-            OptionC = "Abundância",
+            Text = "Em qual maneira Abinádi foi martirizado?",
+            Answer = "Queimado. | Mosias 17:13-20",
+            OptionA = "Pedrada",
+            OptionB = "Queimado",
+            OptionC = "Pisoteado",
             CorrectOption = 'B'
         },
         new Card
         {
             Id = 16,
             Type = CardType.Question,
-            Text = "Quem foi o líder dos lamanitas que se converteu?",
-            Answer = "Rei Lamôni / Anti-Néfi-Lei. | Alma 19 / Alma 22",
+            Text = "Quem foi o líder dos lamanitas que se converteu, em alma 19?",
+            Answer = "Rei Lamôni. | Alma 19",
             OptionA = "Lamã",
             OptionB = "Rei Lamôni",
             OptionC = "Anti-Néfi-Leí",
@@ -261,7 +261,7 @@ public partial class GameEngineService
         {
             Id = 23,
             Type = CardType.Question,
-            Text = "No Velho Testa=mento qual livro vem após Esdras?",
+            Text = "No Velho Testamento qual livro vem após Esdras?",
             Answer = "Neemias. | Neemias 2:1-6",
             OptionA = "Neemias",
             OptionB = "Ester",
@@ -284,10 +284,10 @@ public partial class GameEngineService
             Id = 25,
             Type = CardType.Question,
             Text = "Qual profeta pregou sobre a vinda de Cristo na Muralha de Zaraenla?",
-            Answer = "Abinádi. | Mosias 16:2",
+            Answer = "Samuel. | Mosias 16:2",
             OptionA = "Alma",
             OptionB = "Helamã",
-            OptionC = "Abinádi",
+            OptionC = "Samuel",
             CorrectOption = 'C'
         },
         new Card
@@ -382,7 +382,7 @@ public partial class GameEngineService
         {
             Id = 34,
             Type = CardType.Question,
-            Text = "Quem interpretou o sonho do rei Nabucodonosor ?",
+            Text = "Quem interpretou o sonho do rei Nabucodonosor?",
             Answer = "Daniel. | Daniel 6:16-23",
             OptionA = "Esdras",
             OptionB = "Isaías",
@@ -525,7 +525,7 @@ public partial class GameEngineService
         {
             Id = 47,
             Type = CardType.Question,
-            Text = "Qual nome Abraão deu a seu primeiro filho?",
+            Text = "Qual nome Abraão deu a seu primeiro filho, com sua esposa Sara?",
             Answer = "Isaque. | Gênesis 21:1-3",
             OptionA = "Ismael",
             OptionB = "Isaque",
@@ -602,7 +602,7 @@ public partial class GameEngineService
         {
             Id = 54,
             Type = CardType.Question,
-            Text = "Quantas parábolas foram contadas por Jesus, aproximada- mente?",
+            Text = "Quantas parábolas foram contadas por Jesus, aproximadamente?",
             Answer = "Aproximadamente 40. | (Alguns sites (Google, etc)",
             OptionA = "Aproximadamente 20",
             OptionB = "Aproximadamente 40",
@@ -646,7 +646,7 @@ public partial class GameEngineService
         {
             Id = 58,
             Type = CardType.Question,
-            Text = "Antes de se chamado Josué, qual era seu nome?",
+            Text = "Em números 13:16, antes de se chamado Josué, qual era seu nome?",
             Answer = "Oseias. | Números 13:16",
             OptionA = "Calebe",
             OptionB = "Fineias",
@@ -954,7 +954,7 @@ public partial class GameEngineService
         {
             Id = 86,
             Type = CardType.Question,
-            Text = "Qual mulher no Livro de Mórmon foi serva do rei Lamôni e teve uma visão marcante do poder de Deus?",
+            Text = "Qual mulher no Livro de Mórmon foi serva do rei Lamôni, em alma 19, convertida ao evangelho?",
             Answer = "Abis. | Alma 19:16",
             OptionA = "Isabel",
             OptionB = "Saraia",
@@ -988,9 +988,9 @@ public partial class GameEngineService
             Id = 89,
             Type = CardType.Question,
             Text = "Qual era a moeda de menor valor no sistema monetário nefita?",
-            Answer = "Leí (meia sena). | Alma 11:15",
+            Answer = "Leá (metade de um siblum). | Alma 11",
             OptionA = "Sena",
-            OptionB = "Leí (meia sena)",
+            OptionB = "Leá (metade de um siblum)",
             OptionC = "Ezrom",
             CorrectOption = 'B'
         },
@@ -1009,11 +1009,11 @@ public partial class GameEngineService
         {
             Id = 91,
             Type = CardType.Question,
-            Text = "Quem era o rei do povo de Zaraenla quando foram descobertos pelo povo do primeiro Rei Mosias?",
-            Answer = "Zaraenla. | Mosias 1:10",
-            OptionA = "Anti-Néfi-Leí",
-            OptionB = "Zaraenla",
-            OptionC = "Amôn",
+            Text = "Quem o rei Noé mandou matar na fogueira por pregar o arrependimento ao seu povo?",
+            Answer = "Abinadi. | Mosias 17:20",
+            OptionA = "Alma",
+            OptionB = "Abinadi",
+            OptionC = "Amuleque",
             CorrectOption = 'B'
         },
         new Card
@@ -1032,9 +1032,9 @@ public partial class GameEngineService
             Id = 93,
             Type = CardType.Question,
             Text = "Qual era o nome do pai do profeta Alma, o Filho?",
-            Answer = "Alma, o Velho. | Mosias 27",
+            Answer = "Alma, Pai. | Mosias 27",
             OptionA = "Helamã",
-            OptionB = "Alma, o Velho",
+            OptionB = "Alma, Pai",
             OptionC = "Mosias",
             CorrectOption = 'B'
         },
@@ -1097,18 +1097,18 @@ public partial class GameEngineService
         {
             Id = 99,
             Type = CardType.Question,
-            Text = "De acordo com as palavras de Cristo no Livro de Mórmon, qual animal as galinhas usam para proteger os pintinhos embaixo das asas?",
-            Answer = "A própria galinha. | 3 Néfi 10:4",
+            Text = "De acordo com as palavras de Cristo no Livro de Mórmon, qual animal protege os pintinhos embaixo das asas?",
+            Answer = "Galinha. | 3 Néfi 10:4",
             OptionA = "A águia",
             OptionB = "O pato",
-            OptionC = "A própria galinha",
+            OptionC = "Galinha",
             CorrectOption = 'C'
         },
         new Card
         {
             Id = 100,
             Type = CardType.Question,
-            Text = "Quem cortou a cabeça de Siz na batalha final dos jareditas e logo em seguida caiu morto pela falta de ar?",
+            Text = "Quem cortou a cabeça de Siz na batalha final dos jareditas?",
             Answer = "Coriântumr. | Éter 15:30",
             OptionA = "Shared",
             OptionB = "Lib",
@@ -1434,13 +1434,5 @@ public partial class GameEngineService
             ActionCode = "DrinkWater"
         },
 
-        new Card
-        {
-            Id = 135,
-            Type = CardType.Reward,
-            Text = "Parabéns! Ganhou 4 chocolates. Ainda não os coma!",
-            ActionCode = "GiveChocolates",
-            Amount = 4
-        },
     ];
 }

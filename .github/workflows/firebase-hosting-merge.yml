@@ -18,11 +18,11 @@ jobs:
         with:
           dotnet-version: '8.0.x'
           
-      # 2. Compila o jogo
+      # 2. Compila o jogo (inclui wwwroot/js e appsettings de produção)
       - name: Publish Blazor App
-        run: dotnet publish -c Release -o release
-        
-      # 3. Envia para o Firebase no site correto
+        run: dotnet publish NaoComemoreAntesdoFim.csproj -c Release -o release
+
+      # 3. Envia site + firebase.json (rewrite /api -> Cloud Run) para o Firebase
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

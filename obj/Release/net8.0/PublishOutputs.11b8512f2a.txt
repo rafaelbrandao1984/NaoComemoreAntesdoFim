@@ -1,0 +1,4 @@
+c:\NaoComemoreAntesdoFim\release-test\chave-tts.json
+c:\NaoComemoreAntesdoFim\release-test\firebase.json
+c:\NaoComemoreAntesdoFim\release-test\emcc-props.json
+c:\NaoComemoreAntesdoFim\release-test\web.config

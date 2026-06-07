@@ -1,7 +1,6 @@
 @page "/"
 @inject GameEngineService GameEngine
 @inject NavigationManager Navigation
-
 <PageTitle>Configuração — Não Comemore Antes do Fim</PageTitle>
 
 <div class="setup-page">
@@ -12,6 +11,13 @@
     </header>
 
     <div class="setup-card">
+        <div class="setup-voice-banner">
+            <div>
+                <strong>🎙 Voz do Apresentador Virtual</strong>
+                <p class="text-muted small mb-0 mt-1">No tabuleiro, use «Configurar Voz» ao lado de Sair. A narração usa Google Cloud Text-to-Speech (vozes Neural2).</p>
+            </div>
+        </div>
+
         <h2>Jogadores</h2>
 
         <div class="input-group mb-3">

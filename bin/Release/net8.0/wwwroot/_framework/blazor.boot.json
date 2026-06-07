@@ -1,12 +1,12 @@
 {
   "mainAssemblyName": "NaoComemoreAntesdoFim",
   "resources": {
-    "hash": "sha256-z28JWqPYH3l2HaWL1kSvTpRpS4nOr3RECHKu5UdSLBM=",
+    "hash": "sha256-sBtNJadrjGzPmsJccWp2ZXi5hkR0q3oHYl2Yb1XBx5c=",
     "jsModuleNative": {
-      "dotnet.native.8.0.27.ib4qxoxn98.js": "sha256-sn/g61GjVPhViOYQDkq1OMlk0eyS9r2Hi0qgU2o0HIU="
+      "dotnet.native.js": "sha256-sn/g61GjVPhViOYQDkq1OMlk0eyS9r2Hi0qgU2o0HIU="
     },
     "jsModuleRuntime": {
-      "dotnet.runtime.8.0.27.q75iv2cyjs.js": "sha256-8TPKoZjPkxn9U2bhn70tBfGFmfwnOXj2CAKmQl5+oJ4="
+      "dotnet.runtime.js": "sha256-8TPKoZjPkxn9U2bhn70tBfGFmfwnOXj2CAKmQl5+oJ4="
     },
     "wasmNative": {
       "dotnet.native.wasm": "sha256-7D8gTSSkvJS3o/A75EM28/08/yQTQOpO2QBau/VdqHY="
@@ -16,6 +16,7 @@
       "icudt_EFIGS.dat": "sha256-8fItetYY8kQ0ww6oxwTLiT3oXlBwHKumbeP2pRF4yTc=",
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
+    "coreAssembly": {},
     "assembly": {
       "Microsoft.AspNetCore.Authorization.wasm": "sha256-pBbijNuXC4NlZuYxRRllxv8HVJgChmzEBeUb9QOPInE=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-hnIBafI0ao+/Xzk+6NzMQa1wftSoPFfNssKZWHvAghc=",
@@ -208,14 +209,18 @@
       "mscorlib.wasm": "sha256-YI5F+NHcYCSuCGvvp5vyTL2orAoMlXo4ep5foTyMfeg=",
       "netstandard.wasm": "sha256-jVzOxH5q4FYYDM01Qwoa/2MjK7CwbDVo6rPFjrBorII=",
       "System.Private.CoreLib.wasm": "sha256-d+N5gZbidgB9OgmPuYn1T6BQWHjajGzz+AvKnZJ+zmA=",
-      "NaoComemoreAntesdoFim.wasm": "sha256-JpLHcKkRj7GZot/Cf+szm6/wILD6wkC1CdRf7ZXMKA8="
+      "NaoComemoreAntesdoFim.wasm": "sha256-6QRSTsPDo49P8NWINS5DmhUsNV5ntqrqhbZp1DUUleI="
     },
     "pdb": {
-      "NaoComemoreAntesdoFim.pdb": "sha256-nXBRlqi1LAc3b8XhjzAhNP+O8KLAeo6bFD0HpJNHekM="
+      "NaoComemoreAntesdoFim.pdb": "sha256-O+bzVk/baZSbP8BnX0v/LhN7XqEYIdBgtxlhHI85eR8="
     }
   },
   "cacheBootResources": true,
   "debugLevel": -1,
+  "appsettings": [
+    "../appsettings.Development.json",
+    "../appsettings.json"
+  ],
   "globalizationMode": "sharded",
   "extensions": {
     "blazor": {}

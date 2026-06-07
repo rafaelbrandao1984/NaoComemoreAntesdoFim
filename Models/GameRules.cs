@@ -20,12 +20,12 @@ public static class GameRules
         "Cada pergunta tem no máximo 1 minuto para ser respondida.",
         "Os sabores de chocolate podem ser escolhidos, mas com rapidez para não atrapalhar o jogo.",
         "É preferível que os jogadores se organizem em roda.",
-        "Cada jogador deve ler a própria pergunta ao retirá-la da urna.",
+        "Cada jogador deve ler a própria pergunta.",
         "Toda prenda ou tarefa deve ser feita na presença de todos os competidores.",
         "Não há limite de prendas: cada competidor deve cumprir a carta quantas vezes for necessário.",
         "Se sobrar chocolate na caixa quando acabarem as cartas de pergunta, divida entre todos.",
         "Não pesquise a resposta antes de responder.",
-        "O jogo termina quando acabarem as cartas de pergunta, quando o tempo da partida chegar ao fim ou após no máximo 2 horas de jogo.",
+        "O jogo termina quando acabarem as cartas de pergunta, quando o tempo da partida chegar ao fim.",
     ];
 
     public static readonly string CardProcedure =

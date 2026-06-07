@@ -14,4 +14,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.27" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="NaoComemoreAntesdoFim.Server/**" />
+    <Content Remove="NaoComemoreAntesdoFim.Server/**" />
+    <None Remove="NaoComemoreAntesdoFim.Server/**" />
+    <Content Remove="chave-tts.json" />
+    <None Remove="chave-tts.json" />
+  </ItemGroup>
+
 </Project>

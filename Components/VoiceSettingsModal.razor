@@ -1,0 +1,177 @@
+@inject GameHostVoiceService HostVoice
+@using System.Globalization
+
+@if (IsOpen)
+{
+    <div class="voice-settings-overlay" @onclick="Close">
+        <div class="voice-settings-modal" @onclick:stopPropagation>
+            <div class="modal-header-custom">
+                <h3>🎙 Ajustes de Voz</h3>
+                <button type="button" class="close-btn" @onclick="Close" aria-label="Fechar">✕</button>
+            </div>
+            <div class="modal-body-custom">
+                @if (isLoading)
+                {
+                    <p class="text-muted small mb-0">Carregando vozes do Google Cloud…</p>
+                }
+                else if (!ttsAvailable)
+                {
+                    <div class="alert alert-warning mb-0">
+                        Serviço de voz indisponível. Inicie a API TTS e configure o Google Cloud Text-to-Speech.
+                        <ul class="small mb-0 mt-2">
+                            <li>Terminal 1: <code>dotnet run --project NaoComemoreAntesdoFim.Server</code></li>
+                            <li>Ative a API «Cloud Text-to-Speech» no projeto GCP</li>
+                            <li>Defina <code>GOOGLE_APPLICATION_CREDENTIALS</code> com a chave de serviço</li>
+                            <li>Defina <code>GoogleCloud:ProjectId</code> em <code>appsettings.json</code> (projeto aera-cloud)</li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label for="voiceSelect" class="form-label">Narrador Virtual (Google Cloud)</label>
+                        <select id="voiceSelect" class="form-select" @bind="prefs.VoiceName" @bind:after="SaveAndApply">
+                            <option value="">— Voz Padrão (Neural2 C) —</option>
+                            @foreach (var voice in availableVoices)
+                            {
+                                <option value="@voice.Name">@GetVoiceLabel(voice)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="slider-header d-flex justify-content-between">
+                            <label for="speedSlider" class="form-label">Velocidade</label>
+                            <span class="slider-value">@FormatRate(prefs.Rate)</span>
+                        </div>
+                        <input type="range"
+                               id="speedSlider"
+                               class="form-range"
+                               min="0.6"
+                               max="1.6"
+                               step="0.1"
+                               @bind="prefs.Rate"
+                               @bind:event="oninput"
+                               @bind:after="SaveAndApply" />
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="slider-header d-flex justify-content-between">
+                            <label for="pitchSlider" class="form-label">Tom (Pitch)</label>
+                            <span class="slider-value">@FormatRate(prefs.Pitch)</span>
+                        </div>
+                        <input type="range"
+                               id="pitchSlider"
+                               class="form-range"
+                               min="0.5"
+                               max="1.5"
+                               step="0.1"
+                               @bind="prefs.Pitch"
+                               @bind:event="oninput"
+                               @bind:after="SaveAndApply" />
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="slider-header d-flex justify-content-between">
+                            <label for="volumeSlider" class="form-label">Volume</label>
+                            <span class="slider-value">@FormatVolume(prefs.Volume)</span>
+                        </div>
+                        <input type="range"
+                               id="volumeSlider"
+                               class="form-range"
+                               min="0.0"
+                               max="1.0"
+                               step="0.1"
+                               @bind="prefs.Volume"
+                               @bind:event="oninput"
+                               @bind:after="SaveAndApply" />
+                    </div>
+
+                    <div class="test-voice-section">
+                        <button type="button" class="btn btn-primary w-100" @onclick="TestVoice" disabled="@isTesting">
+                            @(isTesting ? "🔊 Testando..." : "🔊 Testar Voz")
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsOpenChanged { get; set; }
+
+    private List<GameHostVoiceService.VoiceInfo> availableVoices = new();
+    private GameHostVoiceService.VoicePreferences prefs = new();
+    private bool isTesting;
+    private bool isLoading;
+    private bool ttsAvailable;
+    private bool wasOpen;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsOpen && !wasOpen)
+        {
+            await LoadDataAsync();
+        }
+
+        wasOpen = IsOpen;
+    }
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        await HostVoice.EnsureInitializedAsync();
+        ttsAvailable = await HostVoice.IsAvailableAsync();
+        availableVoices = await HostVoice.GetAvailableVoicesAsync();
+        prefs = await HostVoice.GetPreferencesAsync();
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveAndApply()
+    {
+        await HostVoice.UpdatePreferencesAsync(prefs);
+    }
+
+    private async Task Close()
+    {
+        await SaveAndApply();
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private async Task TestVoice()
+    {
+        if (isTesting)
+            return;
+
+        isTesting = true;
+        StateHasChanged();
+
+        await HostVoice.StopAsync();
+        await SaveAndApply();
+        await HostVoice.TestVoiceAsync("Olá! Eu sou o apresentador virtual. Não comemore antes do fim!");
+
+        isTesting = false;
+        StateHasChanged();
+    }
+
+    private static string FormatRate(double value) =>
+        $"{value.ToString("0.0", CultureInfo.InvariantCulture)}x";
+
+    private static string FormatVolume(double value) =>
+        $"{Math.Round(value * 100).ToString(CultureInfo.InvariantCulture)}%";
+
+    private static string GetVoiceLabel(GameHostVoiceService.VoiceInfo voice) =>
+        string.IsNullOrWhiteSpace(voice.DisplayName)
+            ? $"{voice.Name} ({voice.Lang})"
+            : voice.DisplayName;
+}

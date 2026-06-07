@@ -1,6 +1,7 @@
 @page "/board"
 @layout BoardLayout
 @inject GameEngineService GameEngine
+@inject GameHostVoiceService HostVoice
 @inject NavigationManager Navigation
 @implements IDisposable
 
@@ -54,6 +55,22 @@ else
             <span class="game-clock" role="timer" aria-live="polite">⏱ @FormatGameClock()</span>
             <span>Perguntas: @GameEngine.QuestionsRemaining</span>
             <span>Ações: @GameEngine.ActionCardsRemaining</span>
+            <div class="host-voice-controls" title="Apresentador virtual na TV">
+                <label class="host-voice-toggle">
+                    <input type="checkbox" @bind="hostVoiceEnabled" @bind:after="SyncHostVoiceSettings" />
+                    <span>🎙 Apresentador</span>
+                </label>
+                <label class="host-voice-toggle" title="Ler o texto da pergunta em voz alta">
+                    <input type="checkbox" @bind="hostReadQuestions" @bind:after="SyncHostVoiceSettings" disabled="@(!hostVoiceEnabled)" />
+                    <span>Ler perguntas</span>
+                </label>
+                @if (hostVoiceEnabled && GameEngine.CurrentCard is not null && GameEngine.CardRevealed)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-light host-repeat-btn" @onclick="RepeatHostSpeech">
+                        🔊 Repetir
+                    </button>
+                }
+            </div>
             <button type="button" class="btn btn-sm btn-outline-light rules-toggle" @onclick="ToggleRules">
                 @(showRules ? "Ocultar regras" : "Regras")
             </button>
@@ -302,6 +319,10 @@ else
 @code {
     private bool isDrawing;
     private bool showRules;
+    private bool hostVoiceEnabled = true;
+    private bool hostReadQuestions = true;
+    private bool gameEndAnnounced;
+    private bool timerWarningAnnounced;
     private string selectedTargetIdString = string.Empty;
     private string donorPlayerIdString = string.Empty;
     private string recipientPlayerIdString = string.Empty;
@@ -344,38 +365,66 @@ else
         && Guid.TryParse(recipientPlayerIdString, out var recipientId)
         && donorId != recipientId;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         GameEngine.StateChanged += OnStateChanged;
+        SyncHostVoiceSettings();
 
         if (!GameEngine.IsGameStarted)
-            Navigation.NavigateTo("/");
-        else
         {
-            GameEngine.RefreshEndConditions();
-            _ = StartGameClockAsync();
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        GameEngine.RefreshEndConditions();
+        _ = StartGameClockAsync();
+        await HostVoice.AnnounceWelcomeAsync();
+    }
+
+    private void SyncHostVoiceSettings()
+    {
+        HostVoice.IsEnabled = hostVoiceEnabled;
+        HostVoice.ReadQuestions = hostReadQuestions;
+        if (!hostVoiceEnabled || (!hostReadQuestions && GameEngine.CurrentCard is not null && GameEngineService.IsQuestionCard(GameEngine.CurrentCard) && GameEngine.CardRevealed))
+        {
+            _ = HostVoice.StopAsync();
         }
     }
+
+    private async Task RepeatHostSpeech() =>
+        await HostVoice.RepeatCurrentAsync(GameEngine);
 
     private void OnStateChanged() =>
         InvokeAsync(async () =>
         {
             await SyncAnswerTimerAsync();
+            await TryAnnounceGameEndAsync();
             StateHasChanged();
         });
 
-    private void DrawCard()
+    private async Task TryAnnounceGameEndAsync()
+    {
+        if (!GameEngine.IsGameEnded || gameEndAnnounced)
+            return;
+
+        gameEndAnnounced = true;
+        await HostVoice.AnnounceGameEndAsync(GameEngine);
+    }
+
+    private async Task DrawCard()
     {
         if (GameEngine.CurrentCard is not null)
             return;
 
         isDrawing = true;
+        timerWarningAnnounced = false;
         try
         {
             GameEngine.DrawCard();
             selectedTargetIdString = string.Empty;
             donorPlayerIdString = string.Empty;
             recipientPlayerIdString = string.Empty;
+            await HostVoice.AnnounceAfterDrawAsync(GameEngine);
         }
         catch (InvalidOperationException)
         {
@@ -387,7 +436,19 @@ else
         }
     }
 
-    private void RevealCard() => GameEngine.RevealCard();
+    private async Task RevealCard()
+    {
+        GameEngine.RevealCard();
+
+        if (GameEngine.CurrentCard is not null
+            && GameEngineService.IsQuestionCard(GameEngine.CurrentCard)
+            && GameEngine.CurrentPlayer is not null)
+        {
+            await HostVoice.AnnounceQuestionRevealedAsync(
+                GameEngine.CurrentCard,
+                GameEngine.CurrentPlayer.Name);
+        }
+    }
 
     private void RevealAnswer()
     {
@@ -395,12 +456,22 @@ else
         GameEngine.RevealAnswer();
     }
 
-    private void RecordAnswer(bool correct) => GameEngine.RecordQuestionResult(correct);
+    private async Task RecordAnswer(bool correct)
+    {
+        var playerName = GameEngine.CurrentPlayer?.Name ?? "Jogador";
+        var card = GameEngine.CurrentCard;
+        GameEngine.RecordQuestionResult(correct);
+        await HostVoice.AnnounceQuestionResultAsync(playerName, correct, card);
+    }
 
-    private void SelectOption(char option)
+    private async Task SelectOption(char option)
     {
         StopAnswerTimer();
+        var playerName = GameEngine.CurrentPlayer?.Name ?? "Jogador";
+        var card = GameEngine.CurrentCard;
         GameEngine.SelectMultipleChoiceOption(option);
+        var correct = GameEngine.LastQuestionWasCorrect == true;
+        await HostVoice.AnnounceQuestionResultAsync(playerName, correct, card);
     }
 
     private void EndGame()
@@ -409,33 +480,48 @@ else
         GameEngine.EndGame();
     }
 
-    private void GoHome()
+    private async Task GoHome()
     {
         StopGameClock();
+        await HostVoice.StopAsync();
         GameEngine.ResetGame();
         Navigation.NavigateTo("/");
     }
 
-    private void ApplyTargetEffect()
+    private async Task ApplyTargetEffect()
     {
         if (!CanApplyTarget)
             return;
 
         if (Guid.TryParse(selectedTargetIdString, out var targetId))
+        {
+            var targetName = GameEngine.Players.FirstOrDefault(p => p.Id == targetId)?.Name;
             GameEngine.ApplyActionToTarget(targetId);
+            await HostVoice.AnnounceActionEffectAsync(GameEngine, targetName);
+        }
     }
 
-    private void ApplyDonationEffect()
+    private async Task ApplyDonationEffect()
     {
         if (!CanApplyDonation)
             return;
 
         if (Guid.TryParse(donorPlayerIdString, out var donorId)
             && Guid.TryParse(recipientPlayerIdString, out var recipientId))
+        {
+            var donorName = GameEngine.Players.FirstOrDefault(p => p.Id == donorId)?.Name;
+            var recipientName = GameEngine.Players.FirstOrDefault(p => p.Id == recipientId)?.Name;
             GameEngine.ApplyActionToTargets(donorId, recipientId);
+            await HostVoice.AnnounceActionEffectAsync(GameEngine, donorName, recipientName);
+        }
     }
 
-    private void ConfirmSocialChallenge() => GameEngine.ConfirmSocialChallenge();
+    private async Task ConfirmSocialChallenge()
+    {
+        var playerName = GameEngine.CurrentPlayer?.Name ?? "Jogador";
+        GameEngine.ConfirmSocialChallenge();
+        await HostVoice.AnnounceSocialChallengeDoneAsync(playerName);
+    }
 
     private void ToggleRules() => showRules = !showRules;
 
@@ -498,6 +584,16 @@ else
                     return;
 
                 answerSecondsRemaining--;
+                if (answerSecondsRemaining == 10
+                    && !timerWarningAnnounced
+                    && GameEngine.CurrentPlayer is not null)
+                {
+                    timerWarningAnnounced = true;
+                    await HostVoice.AnnounceTimerWarningAsync(
+                        GameEngine.CurrentPlayer.Name,
+                        answerSecondsRemaining);
+                }
+
                 await InvokeAsync(StateHasChanged);
             }
 
@@ -596,5 +692,6 @@ else
         StopAnswerTimer();
         StopGameClock();
         GameEngine.StateChanged -= OnStateChanged;
+        _ = HostVoice.StopAsync();
     }
 }
