@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj": {}
+    "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj": {}
   },
   "projects": {
-    "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj": {
+    "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
+        "projectUniqueName": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
         "projectName": "NaoComemoreAntesdoFim",
-        "projectPath": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
+        "projectPath": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
         "packagesPath": "C:\\Users\\Rafae\\.nuget\\packages\\",
-        "outputPath": "c:\\NaoComemoreAntesdoFim\\obj\\",
+        "outputPath": "C:\\NaoComemoreAntesdoFim\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Rafae\\AppData\\Roaming\\NuGet\\NuGet.Config"

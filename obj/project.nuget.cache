@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "f6OAdxu/8s8=",
+  "dgSpecHash": "X3FEr0Gm/yw=",
   "success": true,
-  "projectFilePath": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
+  "projectFilePath": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Rafae\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.27\\microsoft.aspnetcore.authorization.8.0.27.nupkg.sha512",
     "C:\\Users\\Rafae\\.nuget\\packages\\microsoft.aspnetcore.components\\8.0.27\\microsoft.aspnetcore.components.8.0.27.nupkg.sha512",
