@@ -1424,3 +1424,239 @@ code {
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
+
+/* --- MVP diversão (TV / festa) --- */
+
+.board-confetti-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.current-player-banner.spotlight-pulse {
+    position: relative;
+    padding: 0.65rem 1.25rem;
+    border: 2px solid rgba(201, 162, 39, 0.55);
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(245, 230, 184, 0.16) 0%, transparent 62%),
+        rgba(8, 20, 52, 0.75);
+    box-shadow:
+        0 0 24px rgba(201, 162, 39, 0.28),
+        inset 0 1px 0 rgba(245, 230, 184, 0.12);
+    animation: spotlight-glow 2.4s ease-in-out infinite;
+}
+
+.current-player-banner.spotlight-pulse strong {
+    text-shadow: 0 0 16px rgba(245, 230, 184, 0.35);
+}
+
+@keyframes spotlight-glow {
+    0%, 100% {
+        box-shadow:
+            0 0 18px rgba(201, 162, 39, 0.22),
+            inset 0 1px 0 rgba(245, 230, 184, 0.1);
+    }
+    50% {
+        box-shadow:
+            0 0 32px rgba(201, 162, 39, 0.42),
+            inset 0 1px 0 rgba(245, 230, 184, 0.16);
+    }
+}
+
+.btn-draw-card.is-drawing {
+    animation: draw-shake 0.55s ease-in-out;
+}
+
+@keyframes draw-shake {
+    0%, 100% { transform: translateY(0) scale(1); }
+    20% { transform: translateY(-2px) scale(1.03) rotate(-1deg); }
+    40% { transform: translateY(1px) scale(0.98) rotate(1deg); }
+    60% { transform: translateY(-3px) scale(1.04); }
+    80% { transform: translateY(0) scale(1.01); }
+}
+
+.card-scene.card-scene--entered {
+    animation: card-enter 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.88);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.card-flip.card-reveal-flash {
+    filter: drop-shadow(0 0 18px rgba(245, 230, 184, 0.45));
+}
+
+.scoreboard-item.score-bump {
+    animation: score-bump 0.85s ease;
+}
+
+@keyframes score-bump {
+    0% { transform: scale(1); }
+    35% {
+        transform: scale(1.06);
+        border-color: var(--gold-bright);
+        box-shadow: 0 0 24px var(--shadow-gold);
+    }
+    100% { transform: scale(1); }
+}
+
+.scoreboard-item.current-turn.score-bump {
+    animation: score-bump-turn 0.85s ease;
+}
+
+@keyframes score-bump-turn {
+    0% { transform: scale(1.02); }
+    35% { transform: scale(1.08); }
+    100% { transform: scale(1.02); }
+}
+
+.social-challenge-stage {
+    width: 100%;
+    max-width: 460px;
+    padding: 1.25rem 1.15rem 1.1rem;
+    border: 3px solid var(--gold);
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(245, 230, 184, 0.14) 0%, transparent 55%),
+        linear-gradient(165deg, rgba(20, 38, 128, 0.55) 0%, rgba(7, 15, 40, 0.95) 100%);
+    box-shadow:
+        0 0 0 1px var(--gold-dim),
+        0 0 28px rgba(201, 162, 39, 0.25),
+        inset 0 1px 0 rgba(245, 230, 184, 0.1);
+    animation: stage-in 0.45s ease-out;
+}
+
+@keyframes stage-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.social-challenge-kicker {
+    margin: 0 0 0.35rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+}
+
+.social-challenge-player {
+    margin: 0 0 0.75rem;
+    font-family: 'Cinzel', serif;
+    font-size: 1.15rem;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+}
+
+.social-challenge-text {
+    margin: 0 0 1rem;
+    font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+    line-height: 1.45;
+    color: var(--gold-light);
+    font-weight: 600;
+}
+
+.btn-social-done {
+    width: 100%;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 2px solid var(--gold-bright);
+    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    color: var(--navy-deep);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.btn-social-done:hover,
+.btn-social-done:focus {
+    color: var(--navy-deep);
+    filter: brightness(1.05);
+}
+
+.podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0.65rem;
+    margin: 1.25rem 0 1.5rem;
+    min-height: 180px;
+}
+
+.podium-slot {
+    flex: 1 1 0;
+    max-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    padding: 0.75rem 0.5rem 0.65rem;
+    border: 2px solid rgba(201, 162, 39, 0.45);
+    border-radius: 6px 6px 0 0;
+    background: rgba(6, 20, 40, 0.65);
+    text-align: center;
+}
+
+.podium-slot--1 {
+    min-height: 150px;
+    border-color: var(--gold);
+    background: rgba(201, 162, 39, 0.14);
+    box-shadow: 0 0 22px var(--shadow-gold);
+    order: 2;
+}
+
+.podium-slot--2 {
+    min-height: 115px;
+    order: 1;
+}
+
+.podium-slot--3 {
+    min-height: 95px;
+    order: 3;
+}
+
+.podium-medal {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.podium-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    color: var(--gold-bright);
+    font-weight: 700;
+}
+
+.podium-fun-title {
+    font-size: 0.72rem;
+    color: var(--gold-light);
+    line-height: 1.25;
+    opacity: 0.95;
+}
+
+.podium-score {
+    font-size: 0.78rem;
+    color: var(--cream);
+    opacity: 0.9;
+}
+
+.game-end-screen.game-end-celebrate {
+    animation: scaleIn 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.grading-result.correct {
+    animation: score-bump 0.7s ease;
+}

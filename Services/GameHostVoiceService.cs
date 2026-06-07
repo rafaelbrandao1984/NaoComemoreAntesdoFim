@@ -293,6 +293,46 @@ public class GameHostVoiceService : IAsyncDisposable
         await SpeakAsync(sampleText);
     }
 
+    public async Task AnnouncePlacarCommentAsync(GameEngineService game, string line)
+    {
+        if (!IsEnabled || !await EnsureInitializedAsync() || !_supported || string.IsNullOrWhiteSpace(line))
+            return;
+
+        await SpeakAsync(line);
+    }
+
+    public async Task AnnouncePlacarAfterCorrectAsync(GameEngineService game, string playerName)
+    {
+        var player = game.Players.FirstOrDefault(p => p.Name == playerName);
+        if (player is null)
+            return;
+
+        await AnnouncePlacarCommentAsync(
+            game,
+            GameHostScripts.PlacarAfterCorrect(playerName, player.Points, player.Chocolates));
+    }
+
+    public async Task AnnouncePlacarAfterWrongAsync(GameEngineService game, string playerName)
+    {
+        await AnnouncePlacarCommentAsync(game, GameHostScripts.PlacarAfterWrong(playerName));
+    }
+
+    public async Task AnnouncePlacarAfterStealAsync(GameEngineService game, string thiefName, string victimName)
+    {
+        await AnnouncePlacarCommentAsync(game, GameHostScripts.PlacarAfterSteal(thiefName, victimName));
+    }
+
+    public async Task AnnounceLeaderSpotlightAsync(GameEngineService game)
+    {
+        var leader = game.GetWinnerPlayer() ?? game.GetChocolateLeader();
+        if (leader is null)
+            return;
+
+        await AnnouncePlacarCommentAsync(
+            game,
+            GameHostScripts.PlacarLeaderSpotlight(leader.Name, leader.Points, leader.Chocolates));
+    }
+
     private static string NormalizeActionCode(string actionCode)
     {
         if (string.IsNullOrWhiteSpace(actionCode))

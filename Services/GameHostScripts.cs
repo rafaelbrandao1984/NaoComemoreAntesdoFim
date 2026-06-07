@@ -158,4 +158,56 @@ public static class GameHostScripts
                 $"Acabou! Agora sim podem comemorar! Quem mais pontuou: {championName}, com {points} pontos e {chocolates} chocolates!",
                 $"Fim de jogo! {championName} liderou com {points} pontos e {chocolates} chocolates. Agora sim — comemorem!",
                 $"Terminou! Campeão: {championName}! {points} pontos, {chocolates} chocolates. Não comemore antes do fim… ops, agora pode!");
+
+    public static string PlacarAfterCorrect(string playerName, int points, int chocolates) =>
+        Pick(
+            $"{playerName} subiu no placar! {points} pontos e {chocolates} chocolate{(chocolates == 1 ? "" : "s")} — guarda tudo, hein!",
+            $"Placar atualizado! {playerName} tem {points} pontos. A tentação cresce, a regra continua!",
+            $"{playerName} encheu o bolso simbólico: {chocolates} chocolate{(chocolates == 1 ? "" : "s")} e {points} pontos. Não coma!",
+            $"Mais pontos para {playerName}! {points} no total. Comemoração continua proibida!",
+            $"A roda viu: {playerName} mandou bem e levou chocolate. Só não comemore antes do fim!");
+
+    public static string PlacarAfterWrong(string playerName) =>
+        Pick(
+            $"{playerName} errou, mas o jogo segue! Quem lidera ainda não pode comer.",
+            $"Desta vez não deu para {playerName}. A caixa de chocolate permanece vigilante.",
+            $"{playerName} ficou na saudade do chocolate. Próxima carta pode virar!",
+            $"Errou, {playerName}! Sem drama — a diversão é não comemorar cedo demais.",
+            $"Placar quieto para {playerName} agora. A roda inteira está de olho!");
+
+    public static string PlacarAfterSteal(string thiefName, string victimName) =>
+        Pick(
+            $"Plot twist! {thiefName} levou chocolate de {victimName}. {victimName}, respira — ainda tem jogo!",
+            $"Roubo autorizado na mesa! {thiefName} ficou mais rico e {victimName} mais magoado.",
+            $"{victimName} perdeu chocolate para {thiefName}! Não comemore antes do fim — especialmente agora!",
+            $"Mudança brusca no placar: {thiefName} agradece, {victimName} faz cara de drama.",
+            $"Chocolate trocou de dono! {thiefName} sorri, {victimName} conta até dez.");
+
+    public static string PlacarLeaderSpotlight(string leaderName, int points, int chocolates) =>
+        Pick(
+            $"{leaderName} lidera com {points} pontos e {chocolates} chocolate{(chocolates == 1 ? "" : "s")}! Proibido comer!",
+            $"Atenção: {leaderName} está na frente — {points} pontos! A tentação é real, a regra também.",
+            $"{leaderName} domina o placar! {chocolates} chocolate{(chocolates == 1 ? "" : "s")} à vista. Não comemore!",
+            $"Olhem o placar: {leaderName} com {points} pontos. Quem comemorar cedo leva bronca da roda!",
+            $"{leaderName} no topo! Chocolate na mesa, boca fechada até o fim!");
+
+    public static string ChampionFunTitle(string name) =>
+        Pick(
+            $"Rei do Chocolate Proibido: {name}",
+            $"Campeão da Autocontrole: {name}",
+            $"Mestre do Não Comemore: {name}",
+            $"Lenda da Roda: {name}",
+            $"Coroa de Ouro (e chocolate): {name}");
+
+    public static string SecondPlaceFunTitle(string name) =>
+        Pick(
+            $"Vice do Drama: {name}",
+            $"Quase Campeão: {name}",
+            $"Prata Brilhante: {name}");
+
+    public static string ThirdPlaceFunTitle(string name) =>
+        Pick(
+            $"Bronze Determinado: {name}",
+            $"Terceiro com Estilo: {name}",
+            $"Pódio Garantido: {name}");
 }

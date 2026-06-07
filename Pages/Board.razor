@@ -3,6 +3,7 @@
 @inject GameEngineService GameEngine
 @inject GameHostVoiceService HostVoice
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 @implements IDisposable
 
 <PageTitle>Tabuleiro — Não Comemore Antes do Fim</PageTitle>
@@ -16,15 +17,45 @@
 }
 else if (GameEngine.IsGameEnded)
 {
-    <div class="game-end-screen">
+    <div class="game-end-screen game-end-celebrate">
         <h1>Fim de Jogo</h1>
         <p class="game-end-reason">@GetEndGameMessage()</p>
         @{
+            var rankedPlayers = GameEngine.GetRankedPlayers().ToList();
             var champion = GameEngine.GetWinnerPlayer() ?? GameEngine.GetChocolateLeader();
         }
         @if (champion is not null && (champion.Points > 0 || champion.Chocolates > 0))
         {
             <p class="game-end-champion">Quem mais pontuou: <strong>@champion.Name</strong> (⭐ @champion.Points pts · 🍫 @champion.Chocolates)</p>
+        }
+        @if (rankedPlayers.Count > 0)
+        {
+            <div class="podium">
+                @if (rankedPlayers.Count > 1)
+                {
+                    <div class="podium-slot podium-slot--2">
+                        <span class="podium-medal">🥈</span>
+                        <span class="podium-name">@rankedPlayers[1].Name</span>
+                        <span class="podium-fun-title">@GetFunTitle(rankedPlayers[1], 1)</span>
+                        <span class="podium-score">⭐ @rankedPlayers[1].Points · 🍫 @rankedPlayers[1].Chocolates</span>
+                    </div>
+                }
+                <div class="podium-slot podium-slot--1">
+                    <span class="podium-medal">🥇</span>
+                    <span class="podium-name">@rankedPlayers[0].Name</span>
+                    <span class="podium-fun-title">@GetFunTitle(rankedPlayers[0], 0)</span>
+                    <span class="podium-score">⭐ @rankedPlayers[0].Points · 🍫 @rankedPlayers[0].Chocolates</span>
+                </div>
+                @if (rankedPlayers.Count > 2)
+                {
+                    <div class="podium-slot podium-slot--3">
+                        <span class="podium-medal">🥉</span>
+                        <span class="podium-name">@rankedPlayers[2].Name</span>
+                        <span class="podium-fun-title">@GetFunTitle(rankedPlayers[2], 2)</span>
+                        <span class="podium-score">⭐ @rankedPlayers[2].Points · 🍫 @rankedPlayers[2].Chocolates</span>
+                    </div>
+                }
+            </div>
         }
         @if (GameEngine.EndReason == GameEndReason.QuestionsExhausted)
         {
@@ -86,7 +117,7 @@ else
                 @foreach (var player in GameEngine.Players)
                 {
                     var isCurrent = GameEngine.CurrentPlayer?.Id == player.Id;
-                    <li class="scoreboard-item @(isCurrent ? "current-turn" : "")">
+                    <li class="scoreboard-item @(isCurrent ? "current-turn" : "") @(scoreBumpIds.Contains(player.Id) ? "score-bump" : "")">
                         <span class="player-name">@player.Name</span>
                         <span class="player-scores">
                             <span class="points-count" title="Pontos">⭐ @player.Points pts</span>
@@ -104,14 +135,14 @@ else
         <main class="board-center">
             @if (GameEngine.CurrentPlayer is not null)
             {
-                <p class="current-player-banner">
+                <p class="current-player-banner spotlight-pulse">
                     Vez de: <strong>@GameEngine.CurrentPlayer.Name</strong>
                 </p>
             }
 
             @if (GameEngine.CurrentCard is null)
             {
-                <button class="btn btn-draw-card"
+                <button class="btn btn-draw-card @(drawPulse ? "is-drawing" : "")"
                         type="button"
                         @onclick="DrawCard"
                         disabled="@(isDrawing || GameEngine.QuestionsRemaining == 0)">
@@ -133,8 +164,8 @@ else
                         </div>
                     }
 
-                    <div class="card-scene">
-                        <div class="card-flip @(GameEngine.CardRevealed ? "is-flipped" : "")">
+                    <div class="card-scene @(cardDrawnPop ? "card-scene--entered" : "")">
+                        <div class="card-flip @(GameEngine.CardRevealed ? "is-flipped" : "") @(cardRevealFlash ? "card-reveal-flash" : "")">
                             <div class="card-face card-back" @onclick="RevealCard">
                                 <div class="card-back-inner">
                                     <p class="card-back-title">NÃO</p>
@@ -289,10 +320,12 @@ else
                     }
                     else if (ShowSocialChallenge)
                     {
-                        <div class="card-actions-panel">
-                            <p class="grading-label">Façam o desafio na mesa, depois confirmem:</p>
-                            <button type="button" class="btn btn-primary w-100" @onclick="ConfirmSocialChallenge">
-                                Desafio feito!
+                        <div class="social-challenge-stage">
+                            <p class="social-challenge-kicker">🎭 Desafio na roda</p>
+                            <p class="social-challenge-player">@GameEngine.CurrentPlayer?.Name</p>
+                            <p class="social-challenge-text">@GameEngine.CurrentCard?.Text</p>
+                            <button type="button" class="btn btn-social-done" @onclick="ConfirmSocialChallenge">
+                                🎉 Desafio feito!
                             </button>
                         </div>
                     }
@@ -322,7 +355,14 @@ else
     private bool hostVoiceEnabled = true;
     private bool hostReadQuestions = true;
     private bool gameEndAnnounced;
+    private bool endFxPlayed;
     private bool timerWarningAnnounced;
+    private bool drawPulse;
+    private bool cardDrawnPop;
+    private bool cardRevealFlash;
+    private readonly HashSet<Guid> scoreBumpIds = new();
+    private readonly Dictionary<Guid, (int Points, int Chocolates)> lastScores = new();
+    private IJSObjectReference? fxModule;
     private string selectedTargetIdString = string.Empty;
     private string donorPlayerIdString = string.Empty;
     private string recipientPlayerIdString = string.Empty;
@@ -378,7 +418,100 @@ else
 
         GameEngine.RefreshEndConditions();
         _ = StartGameClockAsync();
+        SnapshotScores();
+        await LoadFxModuleAsync();
         await HostVoice.AnnounceWelcomeAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (GameEngine.IsGameEnded && !endFxPlayed && fxModule is not null)
+        {
+            endFxPlayed = true;
+            try
+            {
+                await fxModule.InvokeVoidAsync("burstConfetti");
+            }
+            catch
+            {
+                // Efeito visual opcional.
+            }
+        }
+    }
+
+    private async Task LoadFxModuleAsync()
+    {
+        try
+        {
+            fxModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/boardFx.js");
+        }
+        catch
+        {
+            fxModule = null;
+        }
+    }
+
+    private void SnapshotScores()
+    {
+        lastScores.Clear();
+        foreach (var player in GameEngine.Players)
+            lastScores[player.Id] = (player.Points, player.Chocolates);
+    }
+
+    private async Task TriggerScoreBumpFxAsync()
+    {
+        scoreBumpIds.Clear();
+        foreach (var player in GameEngine.Players)
+        {
+            if (!lastScores.TryGetValue(player.Id, out var previous))
+                continue;
+
+            if (player.Points > previous.Points || player.Chocolates > previous.Chocolates)
+                scoreBumpIds.Add(player.Id);
+
+            lastScores[player.Id] = (player.Points, player.Chocolates);
+        }
+
+        if (scoreBumpIds.Count == 0)
+            return;
+
+        StateHasChanged();
+        await Task.Delay(900);
+        scoreBumpIds.Clear();
+        StateHasChanged();
+    }
+
+    private async Task PlaySmallConfettiAsync()
+    {
+        if (fxModule is null)
+            return;
+
+        try
+        {
+            await fxModule.InvokeVoidAsync("burstConfettiSmall");
+        }
+        catch
+        {
+            // Efeito visual opcional.
+        }
+    }
+
+    private static string GetFunTitle(Player player, int rankIndex) =>
+        rankIndex switch
+        {
+            0 => GameHostScripts.ChampionFunTitle(player.Name),
+            1 => GameHostScripts.SecondPlaceFunTitle(player.Name),
+            2 => GameHostScripts.ThirdPlaceFunTitle(player.Name),
+            _ => string.Empty
+        };
+
+    private static bool IsStealAction(string? actionCode)
+    {
+        if (string.IsNullOrWhiteSpace(actionCode))
+            return false;
+
+        var code = actionCode.Split(':', StringSplitOptions.RemoveEmptyEntries)[0];
+        return code is "StealAllChocolates" or "StealChocolate";
     }
 
     private void SyncHostVoiceSettings()
@@ -417,14 +550,20 @@ else
             return;
 
         isDrawing = true;
+        drawPulse = true;
         timerWarningAnnounced = false;
+        StateHasChanged();
+
         try
         {
+            await Task.Delay(120);
             GameEngine.DrawCard();
+            cardDrawnPop = true;
             selectedTargetIdString = string.Empty;
             donorPlayerIdString = string.Empty;
             recipientPlayerIdString = string.Empty;
             await HostVoice.AnnounceAfterDrawAsync(GameEngine);
+            await Task.Delay(650);
         }
         catch (InvalidOperationException)
         {
@@ -432,13 +571,19 @@ else
         }
         finally
         {
+            drawPulse = false;
+            cardDrawnPop = false;
             isDrawing = false;
+            StateHasChanged();
         }
     }
 
     private async Task RevealCard()
     {
         GameEngine.RevealCard();
+        cardRevealFlash = true;
+        StateHasChanged();
+        _ = ClearRevealFlashAsync();
 
         if (GameEngine.CurrentCard is not null
             && GameEngineService.IsQuestionCard(GameEngine.CurrentCard)
@@ -448,6 +593,13 @@ else
                 GameEngine.CurrentCard,
                 GameEngine.CurrentPlayer.Name);
         }
+    }
+
+    private async Task ClearRevealFlashAsync()
+    {
+        await Task.Delay(700);
+        cardRevealFlash = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     private void RevealAnswer()
@@ -462,6 +614,18 @@ else
         var card = GameEngine.CurrentCard;
         GameEngine.RecordQuestionResult(correct);
         await HostVoice.AnnounceQuestionResultAsync(playerName, correct, card);
+
+        if (correct)
+        {
+            await HostVoice.AnnouncePlacarAfterCorrectAsync(GameEngine, playerName);
+            await PlaySmallConfettiAsync();
+        }
+        else
+        {
+            await HostVoice.AnnouncePlacarAfterWrongAsync(GameEngine, playerName);
+        }
+
+        await TriggerScoreBumpFxAsync();
     }
 
     private async Task SelectOption(char option)
@@ -472,6 +636,18 @@ else
         GameEngine.SelectMultipleChoiceOption(option);
         var correct = GameEngine.LastQuestionWasCorrect == true;
         await HostVoice.AnnounceQuestionResultAsync(playerName, correct, card);
+
+        if (correct)
+        {
+            await HostVoice.AnnouncePlacarAfterCorrectAsync(GameEngine, playerName);
+            await PlaySmallConfettiAsync();
+        }
+        else
+        {
+            await HostVoice.AnnouncePlacarAfterWrongAsync(GameEngine, playerName);
+        }
+
+        await TriggerScoreBumpFxAsync();
     }
 
     private void EndGame()
@@ -496,8 +672,15 @@ else
         if (Guid.TryParse(selectedTargetIdString, out var targetId))
         {
             var targetName = GameEngine.Players.FirstOrDefault(p => p.Id == targetId)?.Name;
+            var actorName = GameEngine.CurrentPlayer?.Name ?? "Jogador";
+            var actionCode = GameEngine.CurrentCard?.ActionCode;
             GameEngine.ApplyActionToTarget(targetId);
             await HostVoice.AnnounceActionEffectAsync(GameEngine, targetName);
+
+            if (IsStealAction(actionCode) && !string.IsNullOrEmpty(targetName))
+                await HostVoice.AnnouncePlacarAfterStealAsync(GameEngine, actorName, targetName);
+
+            await TriggerScoreBumpFxAsync();
         }
     }
 
@@ -513,6 +696,7 @@ else
             var recipientName = GameEngine.Players.FirstOrDefault(p => p.Id == recipientId)?.Name;
             GameEngine.ApplyActionToTargets(donorId, recipientId);
             await HostVoice.AnnounceActionEffectAsync(GameEngine, donorName, recipientName);
+            await TriggerScoreBumpFxAsync();
         }
     }
 
@@ -693,5 +877,7 @@ else
         StopGameClock();
         GameEngine.StateChanged -= OnStateChanged;
         _ = HostVoice.StopAsync();
+        if (fxModule is not null)
+            _ = fxModule.DisposeAsync();
     }
 }
