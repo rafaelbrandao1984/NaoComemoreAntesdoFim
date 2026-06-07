@@ -3,24 +3,26 @@
 
 <div class="board-layout game-app">
     <header class="board-layout-header">
-        <div class="board-layout-header-side board-layout-header-side--start" aria-hidden="true"></div>
-
-        <h1 class="board-layout-title">Não Comemore Antes do Fim</h1>
-
-        <div class="board-layout-header-side board-layout-header-side--end">
-            <nav class="board-layout-toolbar" aria-label="Ações do tabuleiro">
-                <button type="button"
-                        class="board-toolbar-btn board-toolbar-btn--voice"
-                        @onclick="VoiceUi.Open"
-                        title="Configurar voz do apresentador">
-                    <span class="board-toolbar-icon" aria-hidden="true">🎙</span>
-                    <span class="board-toolbar-label">Voz</span>
-                </button>
-                <a class="board-toolbar-btn board-toolbar-btn--exit" href="/" title="Voltar à configuração">
-                    Sair
-                </a>
-            </nav>
+        <div class="board-layout-header-brand">
+            <p class="board-layout-kicker">Hot seat na TV</p>
+            <h1 class="board-layout-title">
+                <span class="board-layout-title-main">Não Comemore</span>
+                <span class="board-layout-title-sub">Antes do Fim</span>
+            </h1>
         </div>
+
+        <nav class="board-layout-toolbar" aria-label="Ações do tabuleiro">
+            <button type="button"
+                    class="board-toolbar-btn board-toolbar-btn--voice"
+                    @onclick="VoiceUi.Open"
+                    title="Configurar voz do apresentador">
+                <span class="board-toolbar-icon" aria-hidden="true">🎙</span>
+                <span class="board-toolbar-label">Voz</span>
+            </button>
+            <a class="board-toolbar-btn board-toolbar-btn--exit" href="/" title="Voltar à configuração">
+                Sair
+            </a>
+        </nav>
     </header>
 
     <main class="board-layout-main">

@@ -24,7 +24,7 @@ html, body {
     background-color: var(--navy-deep);
 }
 
-h1, h2, h3, .game-brand, .game-title-small, .setup-header h1, .card-back-title {
+h1, h2, h3, .game-brand, .game-title-small, .setup-header h1, .card-back-title, .board-layout-title-main, .board-layout-title-sub {
     font-family: 'Cinzel', Georgia, 'Times New Roman', serif;
 }
 
