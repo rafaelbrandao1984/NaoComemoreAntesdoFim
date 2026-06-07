@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "TJ8QEUsSojs=",
+  "dgSpecHash": "7PXvVymu5QA=",
   "success": true,
-  "projectFilePath": "c:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\NaoComemoreAntesdoFim.Server.csproj",
+  "projectFilePath": "C:\\NaoComemoreAntesdoFim\\NaoComemoreAntesdoFim.Server\\NaoComemoreAntesdoFim.Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Rafae\\.nuget\\packages\\google.api.commonprotos\\2.15.0\\google.api.commonprotos.2.15.0.nupkg.sha512",
     "C:\\Users\\Rafae\\.nuget\\packages\\google.api.gax\\4.8.0\\google.api.gax.4.8.0.nupkg.sha512",

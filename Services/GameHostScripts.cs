@@ -127,12 +127,6 @@ public static class GameHostScripts
             "DonateAllChocolates" when !string.IsNullOrEmpty(targetName) =>
                 $"Doação na mesa! Chocolates transferidos entre os jogadores.",
 
-            "SkipOtherTurn" when !string.IsNullOrEmpty(targetName) =>
-                $"{targetName} fica de fora na próxima rodada! {playerName} escolheu bem.",
-
-            "SkipTurn" =>
-                $"{playerName} passou a vez! Próximo!",
-
             "DrinkWater" or "DrinkWaterSelf" =>
                 Pick(
                     $"Água na mesa! {playerName}, hidratação é importante.",

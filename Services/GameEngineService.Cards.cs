@@ -1404,20 +1404,7 @@ public partial class GameEngineService
             ActionCode = "EatChocolate",
             Amount = 1
         },
-        new Card
-        {
-            Id = 130,
-            Type = CardType.Action,
-            Text = "Escolha uma pessoa para ficar sem jogar uma rodada.",
-            ActionCode = "SkipOtherTurn"
-        },
-        new Card
-        {
-            Id = 131,
-            Type = CardType.Action,
-            Text = "Passou a vez!",
-            ActionCode = "SkipTurn"
-        },
+
         new Card
         {
             Id = 132,

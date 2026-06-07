@@ -32,7 +32,6 @@ public partial class GameEngineService
     public char? SelectedOption { get; private set; }
 
     private readonly List<Player> _players = [];
-    private bool _turnAdvancedByCard;
 
     public event Action? StateChanged;
 
@@ -79,7 +78,6 @@ public partial class GameEngineService
         EffectApplied = false;
         LastQuestionWasCorrect = null;
         SelectedOption = null;
-        _turnAdvancedByCard = false;
         SocialChallengePending = false;
         EndReason = GameEndReason.None;
         WinnerPlayerId = null;
@@ -122,7 +120,6 @@ public partial class GameEngineService
         EffectApplied = false;
         LastQuestionWasCorrect = null;
         SelectedOption = null;
-        _turnAdvancedByCard = false;
         SocialChallengePending = false;
 
         if (!IsQuestionCard(card) && !RequiresTargetPlayer(card.ActionCode) && !RequiresDonationTargets(card.ActionCode))
@@ -275,7 +272,6 @@ public partial class GameEngineService
         EffectApplied = false;
         LastQuestionWasCorrect = null;
         SelectedOption = null;
-        _turnAdvancedByCard = false;
         SocialChallengePending = false;
         EndReason = GameEndReason.None;
         WinnerPlayerId = null;
@@ -318,10 +314,7 @@ public partial class GameEngineService
         SelectedOption = null;
         SocialChallengePending = false;
 
-        if (!_turnAdvancedByCard)
-            AdvanceToNextPlayer();
-
-        _turnAdvancedByCard = false;
+        AdvanceToNextPlayer();
 
         TryFinishBecauseQuestionsExhausted();
         CheckTimeLimit();
@@ -333,25 +326,7 @@ public partial class GameEngineService
         if (_players.Count == 0)
             return;
 
-        // Limita a quantos jogadores existem para evitar loop infinito
-        var maxSteps = _players.Count;
-        for (var step = 0; step < maxSteps; step++)
-        {
-            CurrentPlayerIndex = (CurrentPlayerIndex + 1) % _players.Count;
-            var next = _players[CurrentPlayerIndex];
-
-            if (next.SkipNextTurn)
-            {
-                // Marca que este jogador perdeu a vez e continua procurando o próximo
-                next.SkipNextTurn = false;
-            }
-            else
-            {
-                // Encontrou jogador válido
-                return;
-            }
-        }
-        // Se todos tinham SkipNextTurn, CurrentPlayerIndex voltou ao início — ok.
+        CurrentPlayerIndex = (CurrentPlayerIndex + 1) % _players.Count;
     }
 
     public Player? GetChocolateLeader() =>
@@ -367,8 +342,7 @@ public partial class GameEngineService
     {
         var code = NormalizeActionCode(actionCode);
         // Nota: "DrinkWater" é um desafio social (IsSocialChallengeCard) e NÃO requer seleção de alvo.
-        return code is "SkipOtherTurn"
-            or "StealAllChocolates"
+        return code is "StealAllChocolates"
             or "StealChocolate"
             or "GiveChocolate"
             or "GiveAllChocolates";
@@ -472,19 +446,7 @@ public partial class GameEngineService
                 }
                 break;
 
-            case "SkipTurn":
-                EffectApplied = true;
-                AdvanceToNextPlayer();
-                _turnAdvancedByCard = true;
-                break;
 
-            case "SkipOtherTurn":
-                if (TryGetTarget(targetPlayerId, out var skipTarget))
-                {
-                    skipTarget.SkipNextTurn = true;
-                    EffectApplied = true;
-                }
-                break;
 
             case "StealAllChocolates":
                 if (TryGetTarget(targetPlayerId, out var stealAllTarget))
